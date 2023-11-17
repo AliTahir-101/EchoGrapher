@@ -45,6 +45,35 @@ int main()
             return 1;
         }
 
+        const int numSamples = 44100 * 5; // 5 seconds of audio
+        float *recordedSamples = new float[numSamples];
+        int index = 0;
+
+        err = Pa_StartStream(stream);
+        if (err != paNoError)
+        {
+            std::cerr << "PortAudio error: start stream: " << Pa_GetErrorText(err) << std::endl;
+            return 1;
+        }
+
+        while (index < numSamples)
+        {
+            err = Pa_ReadStream(stream, &recordedSamples[index], 256);
+            if (err)
+            {
+                std::cerr << "PortAudio error: read stream: " << Pa_GetErrorText(err) << std::endl;
+                return 1;
+            }
+            index += 256;
+        }
+
+        err = Pa_CloseStream(stream);
+        if (err != paNoError)
+        {
+            std::cerr << "PortAudio error: close stream: " << Pa_GetErrorText(err) << std::endl;
+            return 1;
+        }
+
         Pa_Terminate();
     }
 
