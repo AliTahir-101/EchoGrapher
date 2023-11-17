@@ -1,6 +1,8 @@
 #include <iostream>
 #include <portaudio.h> // PortAudio is flexible and can be used for both simple and complex audio tasks, including system audio recording.
 #include <fstream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -12,7 +14,7 @@ struct WAVHeader
     char subchunk1ID[4] = {'f', 'm', 't', ' '};
     uint32_t subchunk1Size = 16; // PCM header size
     uint16_t audioFormat = 1;    // PCM = 1
-    uint16_t numChannels;        // Mono = 1, Stereo = 2, etc.
+    uint16_t numChannels;        // Mono = 1
     uint32_t sampleRate;
     uint32_t byteRate;           // sampleRate * numChannels * bitsPerSample/8
     uint16_t blockAlign;         // numChannels * bitsPerSample/8
@@ -53,23 +55,23 @@ int main()
 
         // Check and set the sample rate based on device capability
         uint32_t desiredSampleRate = 48000;
-        uint32_t actualSampleRate = (deviceInfo->defaultSampleRate >= desiredSampleRate) ? desiredSampleRate : deviceInfo->defaultSampleRate;
+        uint32_t actualSampleRate = min(deviceInfo->defaultSampleRate, static_cast<double>(desiredSampleRate));
         // cout << "desiredSampleRate: " << desiredSampleRate << endl;
         // cout << "deviceInfo->defaultSampleRate: " << deviceInfo->defaultSampleRate << endl;
         inputParameters.channelCount = 1;         // Mono input
         inputParameters.sampleFormat = paFloat32; // 32-bit floating point input
         inputParameters.suggestedLatency = deviceInfo->defaultLowInputLatency;
-        inputParameters.hostApiSpecificStreamInfo = NULL;
+        inputParameters.hostApiSpecificStreamInfo = nullptr;
 
         err = Pa_OpenStream(
             &stream,
             &inputParameters,
-            NULL,             // No output parameters for recording only
+            nullptr,          // No output parameters for recording only
             actualSampleRate, // Sample rate
             256,              // Frames per buffer
             paClipOff,        // We won't output out-of-range samples so don't bother clipping them
-            NULL,             // No callback, use blocking API
-            NULL);            // No data for the callback since we're not using one
+            nullptr,          // No callback, use blocking API
+            nullptr);         // No data for the callback since we're not using one
         if (err != paNoError)
         {
             cerr << "PortAudio error: open stream: " << Pa_GetErrorText(err) << endl;
@@ -77,18 +79,17 @@ int main()
         }
 
         const int numSamples = actualSampleRate * 5; // 5 seconds of audio
-        float *recordedSamples = new float[numSamples];
+        vector<float> recordedSamples(numSamples);
         int index = 0;
         WAVHeader header;
 
         // Set these values based on your actual audio data
         header.numChannels = 1;               // Mono = 1, Stereo = 2
         header.sampleRate = actualSampleRate; // e.g., 44100 or 48000
-        header.bitsPerSample = 16;            // e.g., 16 for PCM
         header.byteRate = header.sampleRate * header.numChannels * header.bitsPerSample / 8;
         header.blockAlign = header.numChannels * header.bitsPerSample / 8;
         header.subchunk2Size = numSamples * header.numChannels * header.bitsPerSample / 8;
-        header.chunkSize = 4 + (8 + header.subchunk1Size) + (8 + header.subchunk2Size);
+        header.chunkSize = 36 + header.subchunk2Size;
 
         err = Pa_StartStream(stream);
         if (err != paNoError)
@@ -126,15 +127,13 @@ int main()
         WriteWAVHeader(outFile, header);
 
         // Convert float samples to 16-bit PCM and write to file
-        for (int i = 0; i < numSamples; ++i)
+        for (auto sample : recordedSamples)
         {
-            int16_t intSample = static_cast<int16_t>(recordedSamples[i] * 32767.0f);
+            int16_t intSample = static_cast<int16_t>(sample * 32767.0f);
             outFile.write(reinterpret_cast<const char *>(&intSample), sizeof(intSample));
         }
 
         outFile.close();
-
-        delete[] recordedSamples;
 
         Pa_Terminate();
     }
