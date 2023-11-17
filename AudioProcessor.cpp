@@ -1,16 +1,9 @@
 #include <iostream>
-#include <vector>
-#include <string>
+#include <portaudio.h> // PortAudio is flexible and can be used for both simple and complex audio tasks, including system audio recording.
 
 using namespace std;
 
 int main()
 {
-    vector<string> msg{"Hello", "C++", "World", "from", "VS Code", "and the C++ extension!"};
-
-    for (const string &word : msg)
-    {
-        cout << word << " ";
-    }
-    cout << endl;
+    return 0;
 }
