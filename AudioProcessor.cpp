@@ -12,7 +12,7 @@ struct WAVHeader
     char subchunk1ID[4] = {'f', 'm', 't', ' '};
     uint32_t subchunk1Size = 16; // PCM header size
     uint16_t audioFormat = 1;    // PCM = 1
-    uint16_t numChannels = 2;    // Mono = 1, Stereo = 2, etc.
+    uint16_t numChannels = 1;    // Mono = 1, Stereo = 2, etc.
     uint32_t sampleRate = 44100;
     uint32_t byteRate;           // sampleRate * numChannels * bitsPerSample/8
     uint16_t blockAlign;         // numChannels * bitsPerSample/8
@@ -57,7 +57,7 @@ int main()
             return 1;
         }
 
-        inputParameters.channelCount = 2;         // Stereo input
+        inputParameters.channelCount = 1;         // Mono input
         inputParameters.sampleFormat = paFloat32; // 32-bit floating point input
         inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
         inputParameters.hostApiSpecificStreamInfo = NULL;
