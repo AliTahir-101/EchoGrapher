@@ -4,6 +4,23 @@
 
 using namespace std;
 
+struct WAVHeader
+{
+    char chunkID[4] = {'R', 'I', 'F', 'F'};
+    uint32_t chunkSize; // Size of the entire file in bytes minus 8 bytes
+    char format[4] = {'W', 'A', 'V', 'E'};
+    char subchunk1ID[4] = {'f', 'm', 't', ' '};
+    uint32_t subchunk1Size = 16; // PCM header size
+    uint16_t audioFormat = 1;    // PCM = 1
+    uint16_t numChannels = 1;    // Mono = 1, Stereo = 2, etc.
+    uint32_t sampleRate = 44100;
+    uint32_t byteRate;           // sampleRate * numChannels * bitsPerSample/8
+    uint16_t blockAlign;         // numChannels * bitsPerSample/8
+    uint16_t bitsPerSample = 16; // 8 bits = 8, 16 bits = 16, etc.
+    char subchunk2ID[4] = {'d', 'a', 't', 'a'};
+    uint32_t subchunk2Size; // numSamples * numChannels * bitsPerSample/8
+};
+
 int main()
 {
     PaError err = Pa_Initialize(); // Calling Library initialization function
