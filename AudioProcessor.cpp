@@ -21,6 +21,20 @@ struct WAVHeader
     uint32_t subchunk2Size; // numSamples * numChannels * bitsPerSample/8
 };
 
+void WriteWAVHeader(std::ofstream &file, int numSamples, int sampleRate, int numChannels, int bitsPerSample)
+{
+    WAVHeader header;
+    header.sampleRate = sampleRate;
+    header.numChannels = numChannels;
+    header.bitsPerSample = bitsPerSample;
+    header.byteRate = sampleRate * numChannels * bitsPerSample / 8;
+    header.blockAlign = numChannels * bitsPerSample / 8;
+    header.subchunk2Size = numSamples * numChannels * bitsPerSample / 8;
+    header.chunkSize = 4 + (8 + header.subchunk1Size) + (8 + header.subchunk2Size);
+
+    file.write(reinterpret_cast<const char *>(&header), sizeof(header));
+}
+
 int main()
 {
     PaError err = Pa_Initialize(); // Calling Library initialization function
