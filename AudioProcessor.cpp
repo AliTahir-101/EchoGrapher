@@ -123,6 +123,9 @@ int main()
             return 1;
         }
 
+        plan_forward = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+        plan_backward = fftwf_plan_dft_1d(windowSize, out, in, FFTW_BACKWARD, FFTW_ESTIMATE);
+
         while (index < numSamples)
         {
             err = Pa_ReadStream(stream, &recordedSamples[index], 256);
@@ -134,17 +137,15 @@ int main()
             else
             {
 
-                plan_forward = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-                plan_backward = fftwf_plan_dft_1d(windowSize, out, in, FFTW_BACKWARD, FFTW_ESTIMATE);
                 // Process in frames
                 for (int i = 0; i + windowSize <= numSamples; i += hopSize)
                 {
                     // Apply Hanning window and store in FFTW input
-                    for (int j = 0; j < windowSize; ++j)
-                    {
-                        in[j][0] = recordedSamples[i + j] * window[j];
-                        in[j][1] = 0.0;
-                    }
+                    // for (int j = 0; j < windowSize; ++j)
+                    // {
+                    //     in[j][0] = recordedSamples[i + j] * window[j];
+                    //     in[j][1] = 0.0;
+                    // }
 
                     // FFT
                     fftwf_execute(plan_forward);
@@ -155,17 +156,17 @@ int main()
                     fftwf_execute(plan_backward);
 
                     // Overlap-add method
-                    for (int j = 0; j < windowSize; ++j)
-                    {
-                        outputSamples[i + j] += (in[j][0] / windowSize) * window[j]; // Normalize and window the output
-                    }
+                    // for (int j = 0; j < windowSize; ++j)
+                    // {
+                    //     outputSamples[i + j] += (in[j][0] / windowSize) * window[j]; // Normalize and window the output
+                    // }
                 }
-
-                fftwf_destroy_plan(plan_forward);
-                fftwf_destroy_plan(plan_backward);
             }
             index += 256;
         }
+
+        fftwf_destroy_plan(plan_forward);
+        fftwf_destroy_plan(plan_backward);
 
         err = Pa_CloseStream(stream);
         if (err != paNoError)
