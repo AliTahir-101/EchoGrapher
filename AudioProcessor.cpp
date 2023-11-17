@@ -12,8 +12,8 @@ struct WAVHeader
     char subchunk1ID[4] = {'f', 'm', 't', ' '};
     uint32_t subchunk1Size = 16; // PCM header size
     uint16_t audioFormat = 1;    // PCM = 1
-    uint16_t numChannels = 1;    // Mono = 1, Stereo = 2, etc.
-    uint32_t sampleRate = 44100;
+    uint16_t numChannels;        // Mono = 1, Stereo = 2, etc.
+    uint32_t sampleRate;
     uint32_t byteRate;           // sampleRate * numChannels * bitsPerSample/8
     uint16_t blockAlign;         // numChannels * bitsPerSample/8
     uint16_t bitsPerSample = 16; // 8 bits = 8, 16 bits = 16, etc.
@@ -21,17 +21,8 @@ struct WAVHeader
     uint32_t subchunk2Size; // numSamples * numChannels * bitsPerSample/8
 };
 
-void WriteWAVHeader(ofstream &file, int numSamples, int sampleRate, int numChannels, int bitsPerSample)
+void WriteWAVHeader(ofstream &file, WAVHeader header)
 {
-    WAVHeader header;
-    header.sampleRate = sampleRate;
-    header.numChannels = numChannels;
-    header.bitsPerSample = bitsPerSample;
-    header.byteRate = sampleRate * numChannels * bitsPerSample / 8;
-    header.blockAlign = numChannels * bitsPerSample / 8;
-    header.subchunk2Size = numSamples * numChannels * bitsPerSample / 8;
-    header.chunkSize = 4 + (8 + header.subchunk1Size) + (8 + header.subchunk2Size);
-
     file.write(reinterpret_cast<const char *>(&header), sizeof(header));
 }
 
@@ -49,6 +40,7 @@ int main()
 
         PaStream *stream;
         PaStreamParameters inputParameters;
+        const PaDeviceInfo *deviceInfo;
 
         inputParameters.device = Pa_GetDefaultInputDevice();
         if (inputParameters.device == paNoDevice)
@@ -57,29 +49,46 @@ int main()
             return 1;
         }
 
+        deviceInfo = Pa_GetDeviceInfo(inputParameters.device);
+
+        // Check and set the sample rate based on device capability
+        uint32_t desiredSampleRate = 48000;
+        uint32_t actualSampleRate = (deviceInfo->defaultSampleRate >= desiredSampleRate) ? desiredSampleRate : deviceInfo->defaultSampleRate;
+        // cout << "desiredSampleRate: " << desiredSampleRate << endl;
+        // cout << "deviceInfo->defaultSampleRate: " << deviceInfo->defaultSampleRate << endl;
         inputParameters.channelCount = 1;         // Mono input
         inputParameters.sampleFormat = paFloat32; // 32-bit floating point input
-        inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
+        inputParameters.suggestedLatency = deviceInfo->defaultLowInputLatency;
         inputParameters.hostApiSpecificStreamInfo = NULL;
 
         err = Pa_OpenStream(
             &stream,
             &inputParameters,
-            NULL,      // No output parameters for recording only
-            44100,     // Sample rate
-            256,       // Frames per buffer
-            paClipOff, // We won't output out-of-range samples so don't bother clipping them
-            NULL,      // No callback, use blocking API
-            NULL);     // No data for the callback since we're not using one
+            NULL,             // No output parameters for recording only
+            actualSampleRate, // Sample rate
+            256,              // Frames per buffer
+            paClipOff,        // We won't output out-of-range samples so don't bother clipping them
+            NULL,             // No callback, use blocking API
+            NULL);            // No data for the callback since we're not using one
         if (err != paNoError)
         {
             cerr << "PortAudio error: open stream: " << Pa_GetErrorText(err) << endl;
             return 1;
         }
 
-        const int numSamples = 44100 * 5; // 5 seconds of audio
+        const int numSamples = actualSampleRate * 5; // 5 seconds of audio
         float *recordedSamples = new float[numSamples];
         int index = 0;
+        WAVHeader header;
+
+        // Set these values based on your actual audio data
+        header.numChannels = 1;               // Mono = 1, Stereo = 2
+        header.sampleRate = actualSampleRate; // e.g., 44100 or 48000
+        header.bitsPerSample = 16;            // e.g., 16 for PCM
+        header.byteRate = header.sampleRate * header.numChannels * header.bitsPerSample / 8;
+        header.blockAlign = header.numChannels * header.bitsPerSample / 8;
+        header.subchunk2Size = numSamples * header.numChannels * header.bitsPerSample / 8;
+        header.chunkSize = 4 + (8 + header.subchunk1Size) + (8 + header.subchunk2Size);
 
         err = Pa_StartStream(stream);
         if (err != paNoError)
@@ -114,7 +123,7 @@ int main()
             return 1;
         }
 
-        WriteWAVHeader(outFile, numSamples, 44100, 1, 16);
+        WriteWAVHeader(outFile, header);
 
         // Convert float samples to 16-bit PCM and write to file
         for (int i = 0; i < numSamples; ++i)
