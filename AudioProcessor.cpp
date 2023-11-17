@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <fftw3.h>
 #include <cmath>
+#include <cstring>
 
 using namespace std;
 
@@ -95,12 +96,15 @@ int main()
 
         // Variables for FFTW
         fftwf_complex *in, *out;
-        fftwf_plan plan;
+        fftwf_plan plan_forward, plan_backward;
 
         in = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * windowSize);
         out = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * windowSize);
 
         vector<float> recordedSamples(numSamples);
+        vector<float> overlap(windowSize, 0.0f);
+        vector<float> outputSamples(numSamples + windowSize, 0.0f);
+
         int index = 0;
         WAVHeader header;
 
@@ -129,6 +133,9 @@ int main()
             }
             else
             {
+
+                plan_forward = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+                plan_backward = fftwf_plan_dft_1d(windowSize, out, in, FFTW_BACKWARD, FFTW_ESTIMATE);
                 // Process in frames
                 for (int i = 0; i + windowSize <= numSamples; i += hopSize)
                 {
@@ -139,14 +146,23 @@ int main()
                         in[j][1] = 0.0;
                     }
 
-                    // Create FFT plan and execute
-                    plan = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-                    fftwf_execute(plan);
+                    // FFT
+                    fftwf_execute(plan_forward);
 
-                    // Process the FFT output (out) here
+                    // // Process the FFT output here (e.g., filtering)
 
-                    fftwf_destroy_plan(plan);
+                    // IFFT
+                    fftwf_execute(plan_backward);
+
+                    // Overlap-add method
+                    for (int j = 0; j < windowSize; ++j)
+                    {
+                        outputSamples[i + j] += (in[j][0] / windowSize) * window[j]; // Normalize and window the output
+                    }
                 }
+
+                fftwf_destroy_plan(plan_forward);
+                fftwf_destroy_plan(plan_backward);
             }
             index += 256;
         }
