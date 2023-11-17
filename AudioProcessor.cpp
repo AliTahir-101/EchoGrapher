@@ -81,6 +81,7 @@ int main()
 
         const int numSamples = actualSampleRate * 5; // 5 seconds of audio
         vector<float> recordedSamples(numSamples);
+        vector<fftwf_complex> out(numSamples / 2 + 1); // FFTW output array
         int index = 0;
         WAVHeader header;
 
@@ -109,6 +110,18 @@ int main()
             }
             index += 256;
         }
+
+        // FFTW Plan
+        fftwf_plan plan = fftwf_plan_dft_r2c_1d(numSamples, recordedSamples.data(), out.data(), FFTW_ESTIMATE);
+
+        // Execute FFTW Plan
+        fftwf_execute(plan);
+
+        // ... [Code to analyze/process FFTW output will come here]
+
+        // Cleanup
+        fftwf_destroy_plan(plan);
+        fftwf_cleanup();
 
         err = Pa_CloseStream(stream);
         if (err != paNoError)
