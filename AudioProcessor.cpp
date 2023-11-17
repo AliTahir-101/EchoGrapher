@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <fftw3.h>
+#include <cmath>
 
 using namespace std;
 
@@ -80,8 +81,26 @@ int main()
         }
 
         const int numSamples = actualSampleRate * 5; // 5 seconds of audio
+
+        // Constants for Hanning window and frame processing
+        const int windowSize = 1024;
+        const int hopSize = windowSize / 2;
+        vector<float> window(windowSize);
+
+        // Hanning window
+        for (int i = 0; i < windowSize; ++i)
+        {
+            window[i] = 0.5 * (1 - cos(2 * M_PI * i / (windowSize - 1)));
+        }
+
+        // Variables for FFTW
+        fftwf_complex *in, *out;
+        fftwf_plan plan;
+
+        in = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * windowSize);
+        out = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * windowSize);
+
         vector<float> recordedSamples(numSamples);
-        vector<fftwf_complex> out(numSamples / 2 + 1); // FFTW output array
         int index = 0;
         WAVHeader header;
 
@@ -108,20 +127,29 @@ int main()
                 cerr << "PortAudio error: read stream: " << Pa_GetErrorText(err) << endl;
                 return 1;
             }
+            else
+            {
+                // Process in frames
+                for (int i = 0; i + windowSize <= numSamples; i += hopSize)
+                {
+                    // Apply Hanning window and store in FFTW input
+                    for (int j = 0; j < windowSize; ++j)
+                    {
+                        in[j][0] = recordedSamples[i + j] * window[j];
+                        in[j][1] = 0.0;
+                    }
+
+                    // Create FFT plan and execute
+                    plan = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+                    fftwf_execute(plan);
+
+                    // Process the FFT output (out) here
+
+                    fftwf_destroy_plan(plan);
+                }
+            }
             index += 256;
         }
-
-        // FFTW Plan
-        fftwf_plan plan = fftwf_plan_dft_r2c_1d(numSamples, recordedSamples.data(), out.data(), FFTW_ESTIMATE);
-
-        // Execute FFTW Plan
-        fftwf_execute(plan);
-
-        // ... [Code to analyze/process FFTW output will come here]
-
-        // Cleanup
-        fftwf_destroy_plan(plan);
-        fftwf_cleanup();
 
         err = Pa_CloseStream(stream);
         if (err != paNoError)
@@ -148,6 +176,11 @@ int main()
         }
 
         outFile.close();
+
+        // Clean up
+        fftwf_free(in);
+        fftwf_free(out);
+        fftwf_cleanup();
 
         Pa_Terminate();
     }
