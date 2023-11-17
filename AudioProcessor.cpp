@@ -1,5 +1,6 @@
 #include <iostream>
 #include <portaudio.h> // PortAudio is flexible and can be used for both simple and complex audio tasks, including system audio recording.
+#include <fstream>
 
 using namespace std;
 
