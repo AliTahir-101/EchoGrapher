@@ -10,7 +10,8 @@
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-lportaudio"
+                "-lportaudio",
+                "-lfftw3"
             ],
             "options": {
                 "cwd": "${fileDirname}"
