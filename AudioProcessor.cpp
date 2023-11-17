@@ -12,7 +12,7 @@ struct WAVHeader
     char subchunk1ID[4] = {'f', 'm', 't', ' '};
     uint32_t subchunk1Size = 16; // PCM header size
     uint16_t audioFormat = 1;    // PCM = 1
-    uint16_t numChannels = 1;    // Mono = 1, Stereo = 2, etc.
+    uint16_t numChannels = 2;    // Mono = 1, Stereo = 2, etc.
     uint32_t sampleRate = 44100;
     uint32_t byteRate;           // sampleRate * numChannels * bitsPerSample/8
     uint16_t blockAlign;         // numChannels * bitsPerSample/8
@@ -21,7 +21,7 @@ struct WAVHeader
     uint32_t subchunk2Size; // numSamples * numChannels * bitsPerSample/8
 };
 
-void WriteWAVHeader(std::ofstream &file, int numSamples, int sampleRate, int numChannels, int bitsPerSample)
+void WriteWAVHeader(ofstream &file, int numSamples, int sampleRate, int numChannels, int bitsPerSample)
 {
     WAVHeader header;
     header.sampleRate = sampleRate;
@@ -53,7 +53,7 @@ int main()
         inputParameters.device = Pa_GetDefaultInputDevice();
         if (inputParameters.device == paNoDevice)
         {
-            std::cerr << "No default input device." << std::endl;
+            cerr << "No default input device." << endl;
             return 1;
         }
 
@@ -73,7 +73,7 @@ int main()
             NULL);     // No data for the callback since we're not using one
         if (err != paNoError)
         {
-            std::cerr << "PortAudio error: open stream: " << Pa_GetErrorText(err) << std::endl;
+            cerr << "PortAudio error: open stream: " << Pa_GetErrorText(err) << endl;
             return 1;
         }
 
@@ -84,7 +84,7 @@ int main()
         err = Pa_StartStream(stream);
         if (err != paNoError)
         {
-            std::cerr << "PortAudio error: start stream: " << Pa_GetErrorText(err) << std::endl;
+            cerr << "PortAudio error: start stream: " << Pa_GetErrorText(err) << endl;
             return 1;
         }
 
@@ -93,7 +93,7 @@ int main()
             err = Pa_ReadStream(stream, &recordedSamples[index], 256);
             if (err)
             {
-                std::cerr << "PortAudio error: read stream: " << Pa_GetErrorText(err) << std::endl;
+                cerr << "PortAudio error: read stream: " << Pa_GetErrorText(err) << endl;
                 return 1;
             }
             index += 256;
@@ -102,9 +102,30 @@ int main()
         err = Pa_CloseStream(stream);
         if (err != paNoError)
         {
-            std::cerr << "PortAudio error: close stream: " << Pa_GetErrorText(err) << std::endl;
+            cerr << "PortAudio error: close stream: " << Pa_GetErrorText(err) << endl;
             return 1;
         }
+
+        // After recording is done
+        ofstream outFile("recorded_audio.wav", ios::binary);
+        if (!outFile.is_open())
+        {
+            cerr << "Failed to open file for writing." << endl;
+            return 1;
+        }
+
+        WriteWAVHeader(outFile, numSamples, 44100, 1, 16);
+
+        // Convert float samples to 16-bit PCM and write to file
+        for (int i = 0; i < numSamples; ++i)
+        {
+            int16_t intSample = static_cast<int16_t>(recordedSamples[i] * 32767.0f);
+            outFile.write(reinterpret_cast<const char *>(&intSample), sizeof(intSample));
+        }
+
+        outFile.close();
+
+        delete[] recordedSamples;
 
         Pa_Terminate();
     }
