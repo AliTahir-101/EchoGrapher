@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     // Set up the initial QGraphicsScene for the spectrogram visualization
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->setBackgroundBrush(QBrush(Qt::black));
-    this->setMaximumSize(QSize(800, 520));
+    this->setMaximumSize(QSize(1260, 820));
     // Connect the AudioProcessor signals to the MainWindow slots
     connect(audioProcessor, &AudioProcessor::newLogMelSpectrogram, this, &MainWindow::onNewSpectrogram);
     connect(audioProcessor, &AudioProcessor::errorOccurred, this, &MainWindow::onErrorOccurred);
@@ -48,7 +48,7 @@ void MainWindow::startProcessing()
     ui->startButton->setStyleSheet("QPushButton { color: gray; }");
     ui->stopButton->setEnabled(true); // Enable stop button
     ui->stopButton->setStyleSheet("QPushButton { color: white; }");
-    ui->label->setText("Processing...");
+    ui->labelStatus->setText("Status: Processing...");
 }
 
 void MainWindow::stopProcessing()
@@ -58,7 +58,7 @@ void MainWindow::stopProcessing()
     ui->startButton->setStyleSheet("QPushButton { color: white; }");
     ui->stopButton->setEnabled(false); // Disable stop button
     ui->stopButton->setStyleSheet("QPushButton { color: gray; }");
-    ui->label->setText("Stopped");
+    ui->labelStatus->setText("Status: Stopped");
 }
 
 void MainWindow::onNewSpectrogram(const QVector<float> &spectrum)

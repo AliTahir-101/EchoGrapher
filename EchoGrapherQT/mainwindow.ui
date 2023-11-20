@@ -14,8 +14,80 @@
    <string>EchoGrapher</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayoutMain">
+    <item row="0" column="0" rowspan="5" alignment="Qt::AlignHCenter">
+     <widget class="QGroupBox" name="groupBoxParameters">
+      <property name="title">
+       <string>Spectrogram Parameters</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayoutParameters">
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QSlider" name="windowSizeslider">
+         <property name="minimum">
+          <number>256</number>
+         </property>
+         <property name="maximum">
+          <number>1200</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>512</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="windowSlabel">
+         <property name="text">
+          <string>Window Size</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QSlider" name="overlapSlider">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Overlap</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QSlider" name="melBandSlider">
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>256</number>
+         </property>
+         <property name="singleStep">
+          <number>2</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Mel Bands</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
      <widget class="QGraphicsView" name="graphicsView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -25,19 +97,10 @@
       </property>
      </widget>
     </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <item row="5" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayoutButtons">
       <item>
        <widget class="QPushButton" name="startButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="autoFillBackground">
-         <bool>true</bool>
-        </property>
         <property name="text">
          <string>Start Rec.</string>
         </property>
@@ -45,22 +108,13 @@
       </item>
       <item>
        <widget class="QPushButton" name="stopButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="autoFillBackground">
-         <bool>true</bool>
-        </property>
         <property name="text">
          <string>Stop Rec.</string>
         </property>
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer">
+       <spacer name="horizontalSpacerButtons">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -69,15 +123,19 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
        </spacer>
       </item>
      </layout>
     </item>
-    <item>
+    <item row="6" column="1">
+     <layout class="QVBoxLayout" name="verticalLayoutStatus">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutFilepath">
+        <item>
          <widget class="QLabel" name="outputPathLabel">
           <property name="text">
            <string>Output Path:</string>
@@ -85,35 +143,25 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="outputPathLayout">
-          <item>
-           <widget class="QLineEdit" name="outputPathLineEdit">
-            <property name="placeholderText">
-             <string>Enter or select recording output path</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="selectOutputPathButton">
-            <property name="text">
-             <string>Select...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-    </item>
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Status: Ready</string>
-      </property>
-     </widget>
+         <widget class="QLineEdit" name="outputPathLineEdit"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectOutputPathButton">
+          <property name="text">
+           <string>Select...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelStatus">
+        <property name="text">
+         <string>Status: Ready</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -122,7 +170,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>274</width>
+     <width>808</width>
      <height>22</height>
     </rect>
    </property>
