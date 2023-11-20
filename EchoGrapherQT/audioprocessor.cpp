@@ -83,7 +83,7 @@ void AudioProcessor::audioInputThreadFunction()
         &inputParameters,
         nullptr,          // No output parameters for recording only
         actualSampleRate, // Sample rate
-        512,              // Frames per buffer
+        windowSize,              // Frames per buffer
         paClipOff,        // We won't output out-of-range samples so don't bother clipping them
         nullptr,          // No callback, use blocking API
         nullptr);         // No data for the callback since we're not using one
@@ -94,7 +94,7 @@ void AudioProcessor::audioInputThreadFunction()
     }
 
     // Constants for Hanning window and frame processing
-    const int windowSize = 512;
+//    const int windowSize = 512;
     QVector<float> window(windowSize);
 
     // Hanning window
@@ -134,10 +134,10 @@ void AudioProcessor::audioInputThreadFunction()
     file.write(reinterpret_cast<const char *>(&header), sizeof(WAVHeader));
 
     Pa_StartStream(paStream);
-    QVector<float> audioChunk(512); // Temporary buffer to hold the audio chunk
+    QVector<float> audioChunk(windowSize); // Temporary buffer to hold the audio chunk
     while (!stopFlag.load())
     {
-        err = Pa_ReadStream(paStream, audioChunk.data(), 512);
+        err = Pa_ReadStream(paStream, audioChunk.data(), windowSize);
         if (err)
         {
             emit errorOccurred(QString("PortAudio error: read stream: %1").arg(Pa_GetErrorText(err)));
@@ -205,9 +205,8 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
 {
 
     // Variables for FFTW
-    const int windowSize = 512;
     fftwf_complex *in, *out;
-    fftwf_plan plan_forward, plan_backward;
+    fftwf_plan plan_forward;
     QVector<float> window(windowSize);
 
     // Initialize Hanning window
@@ -228,7 +227,6 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
     }
 
     plan_forward = fftwf_plan_dft_1d(windowSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-    plan_backward = fftwf_plan_dft_1d(windowSize, out, in, FFTW_BACKWARD, FFTW_ESTIMATE);
     if (!plan_forward)
     {
         emit errorOccurred(tr("Error: FFTW plan creation failed."));
@@ -238,7 +236,12 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
         return;
     }
 
-    QVector<float> audioChunk(windowSize);
+    // Initialize these as member variables or parameters
+
+    int overlapSamples = static_cast<int>(windowSize * windowOverlap);
+    int hopSize = windowSize - overlapSamples;
+
+    QVector<float> audioBuffer; // This buffer will hold a large enough sample of audio to apply the window and overlap
     while (!stopFlag.load())
     { // Use load() to read the atomic variable
 
@@ -251,33 +254,29 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
         {
             break;
         }
-        audioChunk = dataQueue.dequeue(); // Dequeue the chunk
+        audioBuffer.append(dataQueue.dequeue()); // Dequeue the chunk and append to buffer
         locker.unlock();                  // Unlock the mutex
 
-        // Now process the audioChunk
-        if (audioChunk.size() < windowSize)
-        {
-            continue; // Skip this iteration or handle error appropriately
-        }
-        // Process the audio chunk
-        for (int i = 0; ((i < windowSize) && !stopFlag.load()); ++i)
-        {
-            in[i][0] = audioChunk[i] * window[i]; // Apply window function
-            in[i][1] = 0.0;
-        }
+        while (audioBuffer.size() >= windowSize)  {
+            if (stopFlag.load()) {break;}
+            // Now process the audioBuffer from index 0 to windowSize
+            for (int i = 0; ((i < windowSize) && !stopFlag.load()); ++i) {
+                in[i][0] = audioBuffer[i] * window[i]; // Apply window function
+                in[i][1] = 0.0;
+            }
 
-        fftwf_execute(plan_forward);
-        // Convert the FFT data to the Mel spectrum
-        QVector<float> melSpectrum = ConvertToMelSpectrum(out, windowSize, sampleRate);
-        emit newLogMelSpectrogram(melSpectrum);
-        fftwf_execute(plan_backward);
+            fftwf_execute(plan_forward);
 
-        audioChunk.fill(0);
+            // Convert the FFT data to the Mel spectrum
+            QVector<float> melSpectrum = ConvertToMelSpectrum(out, windowSize, sampleRate);
+            emit newLogMelSpectrogram(melSpectrum);
+            // Remove the processed frame considering the overlap
+            audioBuffer.remove(0, hopSize);
+        }
     }
 
     // Clean up FFTW resources
     fftwf_destroy_plan(plan_forward);
-    fftwf_destroy_plan(plan_backward);
     fftwf_free(in);
     fftwf_free(out);
     fftwf_cleanup();
@@ -293,7 +292,7 @@ QVector<float> AudioProcessor::ConvertToMelSpectrum(fftwf_complex *fftData, int 
     }
 
     // Number of Mel filters
-    const int numMelFilters = 128; // You can choose this number based on your needs
+//    const int numMelFilters = 128; // You can choose this number based on your needs
 
     // Compute the Mel filterbank
     QVector<QVector<float>> melFilterbank = CreateMelFilterbank(numMelFilters, dataSize, sampleRate);

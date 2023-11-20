@@ -22,6 +22,7 @@ public:
 private slots:
     // Slot for handling the creation of the spectrogram visualization
     void onNewSpectrogram(const QVector<float> &spectrum);
+     void updateSpectrogram();
     // Slot to handle errors from the audio processor
     void onErrorOccurred(const QString &errorMessage);
     // Slots to handle button clicks for starting and stopping processing
@@ -32,9 +33,17 @@ private slots:
 
     void on_selectOutputPathButton_clicked();
 
+    void on_windowSizeslider_valueChanged(int value);
+
+    void on_melBandSlider_valueChanged(int value);
+
+    void on_overlapSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     AudioProcessor *audioProcessor; // Pointer to the AudioProcessor class
+    QVector<QVector<float>> spectrumBuffer;
+    QTimer *updateTimer;
 };
 
 #endif // MAINWINDOW_H

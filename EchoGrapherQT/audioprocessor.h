@@ -38,6 +38,9 @@ class AudioProcessor : public QObject
     Q_OBJECT
 
 public:
+    int numMelFilters = 128;
+    int windowSize = 512; // window size
+    float windowOverlap = 0.5; // 50% overlap
     explicit AudioProcessor(QObject *parent = nullptr);
     ~AudioProcessor();
     QString setOutputPath(const QString &path); // Method to set the output path
@@ -68,6 +71,7 @@ private:
     PaStream *paStream;                // Initialize to nullptr
 
     QString outputPath; // Member variable to hold the output path
+
     QMutex pathMutex;   // Mutex to protect access to outputPath
     // PaStream* paStream;
     //    QMutex dataMutex;

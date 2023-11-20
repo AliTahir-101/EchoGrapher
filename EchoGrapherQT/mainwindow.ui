@@ -24,13 +24,16 @@
        <item alignment="Qt::AlignHCenter">
         <widget class="QSlider" name="windowSizeslider">
          <property name="minimum">
-          <number>256</number>
+          <number>460</number>
          </property>
          <property name="maximum">
           <number>1200</number>
          </property>
          <property name="singleStep">
-          <number>10</number>
+          <number>1</number>
+         </property>
+         <property name="pageStep">
+          <number>1</number>
          </property>
          <property name="value">
           <number>512</number>
@@ -43,19 +46,34 @@
        <item alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="windowSlabel">
          <property name="text">
-          <string>Window Size</string>
+          <string>Window Size: 512</string>
          </property>
         </widget>
        </item>
        <item alignment="Qt::AlignHCenter">
         <widget class="QSlider" name="overlapSlider">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>9</number>
+         </property>
+         <property name="pageStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>5</number>
+         </property>
+         <property name="tracking">
+          <bool>true</bool>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
        <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="overlapLabel">
          <property name="text">
           <string>Overlap</string>
          </property>
@@ -64,13 +82,19 @@
        <item alignment="Qt::AlignHCenter">
         <widget class="QSlider" name="melBandSlider">
          <property name="minimum">
-          <number>2</number>
+          <number>1</number>
          </property>
          <property name="maximum">
-          <number>256</number>
+          <number>500</number>
          </property>
          <property name="singleStep">
-          <number>2</number>
+          <number>1</number>
+         </property>
+         <property name="pageStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>128</number>
          </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -78,9 +102,9 @@
         </widget>
        </item>
        <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="melBandFLabel">
          <property name="text">
-          <string>Mel Bands</string>
+          <string>Mel Bands: 128</string>
          </property>
         </widget>
        </item>
