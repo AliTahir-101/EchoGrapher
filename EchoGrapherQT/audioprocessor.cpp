@@ -11,10 +11,13 @@ using namespace std;
 
 AudioProcessor::AudioProcessor(QObject *parent)
     : QObject(parent),
-      audioInputThread(nullptr),
-      audioProcessingThread(nullptr),
+
+      paStream(nullptr),
       stopFlag(false),
-      paStream(nullptr) {}
+      audioInputThread(nullptr),
+      audioProcessingThread(nullptr)
+{
+}
 
 AudioProcessor::~AudioProcessor() {}
 
@@ -83,7 +86,7 @@ void AudioProcessor::audioInputThreadFunction()
         &inputParameters,
         nullptr,          // No output parameters for recording only
         actualSampleRate, // Sample rate
-        windowSize,              // Frames per buffer
+        windowSize,       // Frames per buffer
         paClipOff,        // We won't output out-of-range samples so don't bother clipping them
         nullptr,          // No callback, use blocking API
         nullptr);         // No data for the callback since we're not using one
@@ -94,7 +97,7 @@ void AudioProcessor::audioInputThreadFunction()
     }
 
     // Constants for Hanning window and frame processing
-//    const int windowSize = 512 by default;
+    //    const int windowSize = 512 by default;
     QVector<float> window(windowSize);
 
     // Hanning window
@@ -255,12 +258,17 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
             break;
         }
         audioBuffer.append(dataQueue.dequeue()); // Dequeue the chunk and append to buffer
-        locker.unlock();                  // Unlock the mutex
+        locker.unlock();                         // Unlock the mutex
 
-        while (audioBuffer.size() >= windowSize)  {
-            if (stopFlag.load()) {break;}
+        while (audioBuffer.size() >= windowSize)
+        {
+            if (stopFlag.load())
+            {
+                break;
+            }
             // Now process the audioBuffer from index 0 to windowSize
-            for (int i = 0; ((i < windowSize) && !stopFlag.load()); ++i) {
+            for (int i = 0; ((i < windowSize) && !stopFlag.load()); ++i)
+            {
                 in[i][0] = audioBuffer[i] * window[i]; // Apply window function
                 in[i][1] = 0.0;
             }
