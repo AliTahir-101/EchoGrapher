@@ -18,13 +18,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->overlapLabel->setText("Overlap: 50%");
     updateTimer = new QTimer(this);
     connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateSpectrogram);
-    updateTimer->start(100); // Update every 100 milliseconds, adjust as needed
+    updateTimer->start(100); // Update every 100 milliseconds
 
-
-    QString dir;
-    dir = audioProcessor->setOutputPath("");
-
-    ui->outputPathLineEdit->setText(dir);
+    ui->outputPathLineEdit->setText(audioProcessor->setOutputPath(""));
 
     PaError err = Pa_Initialize(); // Calling Library initialization function
     if (err != paNoError)
@@ -76,15 +72,17 @@ void MainWindow::stopProcessing()
     ui->overlapSlider->setEnabled(true);
 }
 
-void MainWindow::onNewSpectrogram(const QVector<float> &spectrum) {
-    // Append the new spectrum data to the buffer instead of updating the UI directly
+ void MainWindow::onNewSpectrogram(const QVector<float> &spectrum) {
+     // Append the new spectrum data to the buffer instead of updating the UI directly
     spectrumBuffer.append(spectrum);
-}
+ }
 
-void MainWindow::updateSpectrogram() {
-    if (!spectrumBuffer.isEmpty()) {
-        // Get the dimensions for your spectrogram
-        int spectrogramWidth = 800; // Width of the spectrogram image
+void MainWindow::updateSpectrogram()
+{
+    if (!spectrumBuffer.isEmpty())
+    {
+        // Dimensions for spectrogram
+        int spectrogramWidth = 800;  // Width of the spectrogram image
         int spectrogramHeight = 500; // Height of the spectrogram image
 
         static QImage spectrogramImage(spectrogramWidth, spectrogramHeight, QImage::Format_RGB32);
@@ -93,26 +91,28 @@ void MainWindow::updateSpectrogram() {
         // Shift the spectrogram image left by one column width to make space for new data
         QImage temp = spectrogramImage.copy(1, 0, spectrogramWidth - 1, spectrogramHeight);
         spectrogramImage.fill(Qt::black); // Fill the image with black
-        painter.drawImage(0, 0, temp); // Draw the shifted image onto the original image
+        painter.drawImage(0, 0, temp);    // Draw the shifted image onto the original image
 
         // The x position for the new data (rightmost column)
         int xPosition = spectrogramImage.width() - 1;
 
         // Draw each new column from the buffer onto the spectrogram image
-        for (const QVector<float> &spectrumChunk : spectrumBuffer) {
-            // Assume spectrumChunk values are normalized between 0 and 1
-            for (int y = 0; y < spectrumChunk.size(); ++y) {
-                // Normalize the value to be within the range [0, 1]
-                float normalizedValue = std::max(0.0f, std::min(spectrumChunk[y], 1.0f));
-                // Scale the value to the height of the image
-                int valueHeight = static_cast<int>(normalizedValue * spectrogramHeight);
-                // Calculate the hue, ensuring it is within the range [0, 1]
-                float hue = 0.7f * (1.0f - normalizedValue);
-                // Determine the color based on the value
-                QColor color = QColor::fromHsvF(hue, 1.0f, normalizedValue);
-                // Draw a vertical line representing the spectrum value
-                painter.setPen(color);
-                painter.drawLine(xPosition, spectrogramHeight - valueHeight, xPosition, spectrogramHeight);
+        for (const QVector<float> &spectrum : spectrumBuffer)
+        {
+            for (int i = 0; i < spectrum.size(); ++i)
+            {
+                int barHeight = std::max(0.0f, spectrum[i]) * spectrogramHeight;
+                QLinearGradient gradient(0, spectrogramHeight - barHeight, 0, spectrogramHeight);
+                gradient.setColorAt(0.0, Qt::darkBlue);
+                gradient.setColorAt(0.2, Qt::blue);
+                gradient.setColorAt(0.4, Qt::cyan);
+                gradient.setColorAt(0.6, Qt::green);
+                gradient.setColorAt(0.8, Qt::yellow);
+                gradient.setColorAt(1.0, Qt::red);
+                painter.setBrush(gradient);
+                painter.setPen(Qt::NoPen);
+                // Draw the bar at the current column
+                painter.drawRect(xPosition, spectrogramHeight - barHeight, 1, barHeight);
             }
         }
 
@@ -121,10 +121,13 @@ void MainWindow::updateSpectrogram() {
 
         // Now update the UI with the image
         QGraphicsScene *scene = ui->graphicsView->scene();
-        if (!scene) {
+        if (!scene)
+        {
             scene = new QGraphicsScene(this);
             ui->graphicsView->setScene(scene);
-        } else {
+        }
+        else
+        {
             scene->clear(); // Clear the previous scene
         }
 
@@ -138,7 +141,6 @@ void MainWindow::updateSpectrogram() {
         spectrumBuffer.clear();
     }
 }
-
 
 void MainWindow::onErrorOccurred(const QString &errorMessage)
 {
@@ -182,9 +184,19 @@ void MainWindow::on_melBandSlider_valueChanged(int value)
 }
 
 
+//void MainWindow::on_overlapSlider_valueChanged(int value)
+//{
+//    audioProcessor->windowOverlap = value/10.0f;
+//    ui->overlapLabel->setText("Overlap: " + QString::number(value * 10) + "%");
+//}
+
 void MainWindow::on_overlapSlider_valueChanged(int value)
 {
-    audioProcessor->windowOverlap = value/10.0f;
-    ui->overlapLabel->setText("Overlap: " + QString::number(value * 10) + "%");
+    // Assuming 'value' ranges from 0 to 200 if we want a range from 0% to 100% with 0.5% steps
+    // This means the slider actually has 201 positions (including 0)
+    float overlap = value * 0.5f; // Convert the slider value to the actual overlap percentage
+
+    audioProcessor->windowOverlap = overlap / 100.0f; // Convert percentage to a fraction for the audio processor
+    ui->overlapLabel->setText("Overlap: " + QString::number(overlap, 'f', 1) + "%"); // Display the value with one decimal place
 }
 

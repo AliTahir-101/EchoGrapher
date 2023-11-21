@@ -38,7 +38,7 @@ class AudioProcessor : public QObject
     Q_OBJECT
 
 public:
-    int numMelFilters = 128;
+    int numMelFilters = 25;
     int windowSize = 512; // window size
     float windowOverlap = 0.5; // 50% overlap
     explicit AudioProcessor(QObject *parent = nullptr);

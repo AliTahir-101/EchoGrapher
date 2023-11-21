@@ -94,7 +94,7 @@ void AudioProcessor::audioInputThreadFunction()
     }
 
     // Constants for Hanning window and frame processing
-//    const int windowSize = 512;
+//    const int windowSize = 512 by default;
     QVector<float> window(windowSize);
 
     // Hanning window
@@ -284,15 +284,12 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
 
 QVector<float> AudioProcessor::ConvertToMelSpectrum(fftwf_complex *fftData, int dataSize, int sampleRate)
 {
-    // Ensure dataSize is even and greater than 0 to avoid division by zero
+    // DataSize is even and greater than 0 to avoid division by zero
     if (dataSize <= 0 || dataSize % 2 != 0)
     {
         emit errorOccurred("Invalid dataSize provided to ConvertToMelSpectrum.");
         return {};
     }
-
-    // Number of Mel filters
-//    const int numMelFilters = 128; // You can choose this number based on your needs
 
     // Compute the Mel filterbank
     QVector<QVector<float>> melFilterbank = CreateMelFilterbank(numMelFilters, dataSize, sampleRate);
