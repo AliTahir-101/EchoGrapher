@@ -1,12 +1,14 @@
+#include <portaudio.h>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QMessageBox>
-#include <QGraphicsRectItem>
-#include <QLinearGradient>
-#include <iostream>
-#include <portaudio.h>
-#include <QFileDialog>
+
 #include <QTimer>
+#include <iostream>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QLinearGradient>
+#include <QGraphicsRectItem>
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
@@ -72,10 +74,11 @@ void MainWindow::stopProcessing()
     ui->overlapSlider->setEnabled(true);
 }
 
- void MainWindow::onNewSpectrogram(const QVector<float> &spectrum) {
-     // Append the new spectrum data to the buffer instead of updating the UI directly
+void MainWindow::onNewSpectrogram(const QVector<float> &spectrum)
+{
+    // Append the new spectrum data to the buffer instead of updating the UI directly
     spectrumBuffer.append(spectrum);
- }
+}
 
 void MainWindow::updateSpectrogram()
 {
@@ -176,27 +179,16 @@ void MainWindow::on_windowSizeslider_valueChanged(int value)
     ui->windowSlabel->setText("Window Size: " + QString::number(value));
 }
 
-
 void MainWindow::on_melBandSlider_valueChanged(int value)
 {
     audioProcessor->numMelFilters = value;
     ui->melBandFLabel->setText("Mel Bands: " + QString::number(value));
 }
 
-
-//void MainWindow::on_overlapSlider_valueChanged(int value)
-//{
-//    audioProcessor->windowOverlap = value/10.0f;
-//    ui->overlapLabel->setText("Overlap: " + QString::number(value * 10) + "%");
-//}
-
 void MainWindow::on_overlapSlider_valueChanged(int value)
 {
-    // Assuming 'value' ranges from 0 to 200 if we want a range from 0% to 100% with 0.5% steps
-    // This means the slider actually has 201 positions (including 0)
     float overlap = value * 0.5f; // Convert the slider value to the actual overlap percentage
 
-    audioProcessor->windowOverlap = overlap / 100.0f; // Convert percentage to a fraction for the audio processor
+    audioProcessor->windowOverlap = overlap / 100.0f;                                // Convert percentage to a fraction for the audio processor
     ui->overlapLabel->setText("Overlap: " + QString::number(overlap, 'f', 1) + "%"); // Display the value with one decimal place
 }
-

@@ -1,8 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include "audioprocessor.h"
+
+#include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -22,21 +23,19 @@ public:
 private slots:
     // Slot for handling the creation of the spectrogram visualization
     void onNewSpectrogram(const QVector<float> &spectrum);
-     void updateSpectrogram();
-    // Slot to handle errors from the audio processor
-    void onErrorOccurred(const QString &errorMessage);
-    // Slots to handle button clicks for starting and stopping processing
+    void updateSpectrogram();
+    void onErrorOccurred(const QString &errorMessage); // Slot to handle errors from the audio processor
     void startProcessing();
     void stopProcessing();
+
+    // UI Visualization Click Events
     void on_startButton_clicked();
     void on_stopButton_clicked();
-
     void on_selectOutputPathButton_clicked();
 
+    // UI Slider Options
     void on_windowSizeslider_valueChanged(int value);
-
     void on_melBandSlider_valueChanged(int value);
-
     void on_overlapSlider_valueChanged(int value);
 
 private:

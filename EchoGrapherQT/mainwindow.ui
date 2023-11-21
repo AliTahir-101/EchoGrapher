@@ -1,206 +1,206 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>808</width>
-    <height>520</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>EchoGrapher</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayoutMain">
-    <item row="0" column="0" rowspan="5" alignment="Qt::AlignHCenter">
-     <widget class="QGroupBox" name="groupBoxParameters">
-      <property name="title">
-       <string>Spectrogram Parameters</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayoutParameters">
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QSlider" name="windowSizeslider">
-         <property name="minimum">
-          <number>460</number>
-         </property>
-         <property name="maximum">
-          <number>1024</number>
-         </property>
-         <property name="singleStep">
-          <number>1</number>
-         </property>
-         <property name="pageStep">
-          <number>1</number>
-         </property>
-         <property name="value">
-          <number>512</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="windowSlabel">
-         <property name="text">
-          <string>Window Size: 512</string>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QSlider" name="overlapSlider">
-         <property name="minimum">
-          <number>50</number>
-         </property>
-         <property name="maximum">
-          <number>150</number>
-         </property>
-         <property name="pageStep">
-          <number>1</number>
-         </property>
-         <property name="value">
-          <number>100</number>
-         </property>
-         <property name="tracking">
-          <bool>true</bool>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="overlapLabel">
-         <property name="text">
-          <string>Overlap</string>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QSlider" name="melBandSlider">
-         <property name="minimum">
-          <number>20</number>
-         </property>
-         <property name="maximum">
-          <number>40</number>
-         </property>
-         <property name="singleStep">
-          <number>1</number>
-         </property>
-         <property name="pageStep">
-          <number>1</number>
-         </property>
-         <property name="value">
-          <number>25</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="melBandFLabel">
-         <property name="text">
-          <string>Mel Bands: 25</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayoutButtons">
-      <item>
-       <widget class="QPushButton" name="startButton">
-        <property name="text">
-         <string>Start Rec.</string>
+    <class>MainWindow</class>
+    <widget class="QMainWindow" name="MainWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>808</width>
+                <height>520</height>
+            </rect>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stopButton">
-        <property name="text">
-         <string>Stop Rec.</string>
+        <property name="windowTitle">
+            <string>EchoGrapher</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacerButtons">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item row="6" column="1">
-     <layout class="QVBoxLayout" name="verticalLayoutStatus">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutFilepath">
-        <item>
-         <widget class="QLabel" name="outputPathLabel">
-          <property name="text">
-           <string>Output Path:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="outputPathLineEdit"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="selectOutputPathButton">
-          <property name="text">
-           <string>Select...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QLabel" name="labelStatus">
-        <property name="text">
-         <string>Status: Ready</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>808</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
- </widget>
- <resources/>
- <connections/>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QGridLayout" name="gridLayoutMain">
+                <item row="0" column="0" rowspan="5" alignment="Qt::AlignHCenter">
+                    <widget class="QGroupBox" name="groupBoxParameters">
+                        <property name="title">
+                            <string>Spectrogram Parameters</string>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayoutParameters">
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QSlider" name="windowSizeslider">
+                                    <property name="minimum">
+                                        <number>460</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>1024</number>
+                                    </property>
+                                    <property name="singleStep">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="pageStep">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>512</number>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QLabel" name="windowSlabel">
+                                    <property name="text">
+                                        <string>Window Size: 512</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QSlider" name="overlapSlider">
+                                    <property name="minimum">
+                                        <number>50</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>150</number>
+                                    </property>
+                                    <property name="pageStep">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>100</number>
+                                    </property>
+                                    <property name="tracking">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QLabel" name="overlapLabel">
+                                    <property name="text">
+                                        <string>Overlap</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QSlider" name="melBandSlider">
+                                    <property name="minimum">
+                                        <number>20</number>
+                                    </property>
+                                    <property name="maximum">
+                                        <number>40</number>
+                                    </property>
+                                    <property name="singleStep">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="pageStep">
+                                        <number>1</number>
+                                    </property>
+                                    <property name="value">
+                                        <number>25</number>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                                <widget class="QLabel" name="melBandFLabel">
+                                    <property name="text">
+                                        <string>Mel Bands: 25</string>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </widget>
+                </item>
+                <item row="0" column="1">
+                    <widget class="QGraphicsView" name="graphicsView">
+                        <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                    </widget>
+                </item>
+                <item row="5" column="1">
+                    <layout class="QHBoxLayout" name="horizontalLayoutButtons">
+                        <item>
+                            <widget class="QPushButton" name="startButton">
+                                <property name="text">
+                                    <string>Start Rec.</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QPushButton" name="stopButton">
+                                <property name="text">
+                                    <string>Stop Rec.</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <spacer name="horizontalSpacerButtons">
+                                <property name="orientation">
+                                    <enum>Qt::Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>QSizePolicy::Expanding</enum>
+                                </property>
+                                <property name="sizeHint" stdset="0">
+                                    <size>
+                                        <width>0</width>
+                                        <height>0</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                        </item>
+                    </layout>
+                </item>
+                <item row="6" column="1">
+                    <layout class="QVBoxLayout" name="verticalLayoutStatus">
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayoutFilepath">
+                                <item>
+                                    <widget class="QLabel" name="outputPathLabel">
+                                        <property name="text">
+                                            <string>Output Path:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="outputPathLineEdit"/>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="selectOutputPathButton">
+                                        <property name="text">
+                                            <string>Select...</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QLabel" name="labelStatus">
+                                <property name="text">
+                                    <string>Status: Ready</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </item>
+            </layout>
+        </widget>
+        <widget class="QMenuBar" name="menubar">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>808</width>
+                    <height>22</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="QStatusBar" name="statusbar"/>
+    </widget>
+    <resources/>
+    <connections/>
 </ui>

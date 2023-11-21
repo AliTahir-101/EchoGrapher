@@ -1,20 +1,21 @@
 #ifndef AUDIOPROCESSOR_H
 #define AUDIOPROCESSOR_H
 
-#include <QObject>
-#include <QThread>
-#include <vector>
-#include <mutex>
-#include <condition_variable>
-#include <queue>
 #include <fftw3.h>
+#include <portaudio.h>
+
+#include <mutex>
+#include <queue>
+#include <vector>
+#include <atomic>
 #include <QMutex>
 #include <QQueue>
-#include <QWaitCondition>
-#include <QVector>
 #include <fstream>
-#include <atomic>
-#include <portaudio.h>
+#include <QObject>
+#include <QThread>
+#include <QVector>
+#include <QWaitCondition>
+#include <condition_variable>
 
 struct WAVHeader
 {
@@ -39,10 +40,12 @@ class AudioProcessor : public QObject
 
 public:
     int numMelFilters = 25;
-    int windowSize = 512; // window size
+    int windowSize = 512;      // window size
     float windowOverlap = 0.5; // 50% overlap
+
     explicit AudioProcessor(QObject *parent = nullptr);
     ~AudioProcessor();
+
     QString setOutputPath(const QString &path); // Method to set the output path
     void startProcessing();
     void stopProcessing();
@@ -52,43 +55,27 @@ signals:
     void errorOccurred(const QString &errorMessage); // Signal to report errors
 
 private:
-    void audioInputThreadFunction();
-    void audioProcessingThreadFunction(uint32_t sampleRate);
-
-    // Function to stop and clean up audio input
-    void finalizeAudioInput();
-    PaDeviceIndex selectAppropriateDevice();
-
-    QThread *audioInputThread;      // Separate thread for audio input
-    QThread *audioProcessingThread; // Separate thread for audio processing
-                                    // std::atomic<bool> stopFlag;  // Use std::atomic for thread-safe read/write
+    PaStream *paStream;                // Initialize to nullptr
+    std::atomic<bool> stopFlag{false}; // Ensure it is initialized
+    QThread *audioInputThread;         // Separate thread for audio input
+    QThread *audioProcessingThread;    // Separate thread for audio processing
 
     QMutex dataMutex;                 // Mutex for synchronizing access to the dataQueue
     QWaitCondition dataCondition;     // Condition variable for data availability
     QQueue<QVector<float>> dataQueue; // Queue to hold chunks of audio data
 
-    std::atomic<bool> stopFlag{false}; // Ensure it is initialized
-    PaStream *paStream;                // Initialize to nullptr
-
     QString outputPath; // Member variable to hold the output path
-
     QMutex pathMutex;   // Mutex to protect access to outputPath
-    // PaStream* paStream;
-    //    QMutex dataMutex;
-    //    std::condition_variable dataCondition; // Replaced QWaitCondition with std::condition_variable
-    //    std::queue<QVector<float>> dataQueue; // Assuming a std::queue instead of QQueue for C++ standard library use
+
+    void audioInputThreadFunction();
+    void audioProcessingThreadFunction(uint32_t sampleRate);
 
     // Helper functions
-    float FrequencyToMel(float frequency);
-    float MelToFrequency(float mel);
     QVector<QVector<float>> CreateMelFilterbank(int numFilters, int fftSize, int sampleRate);
     QVector<float> ConvertToMelSpectrum(fftwf_complex *fftData, int dataSize, int sampleRate);
-
+    float FrequencyToMel(float frequency);
+    float MelToFrequency(float mel);
     void WriteWAVHeader(std::ofstream &file, WAVHeader header);
-
-    // PortAudio variables
-
-    // ... Additional private members and helper functions ...
 };
 
 #endif // AUDIOPROCESSOR_H
