@@ -64,17 +64,16 @@ Install the following prerequisites before proceeding:
    ```
 
 ### Using Qt Creator 🛠️ (Recommended)
-
-    1. Launch Qt Creator and choose 'Open Project'.
-    2. Navigate to your project's directory and select  the .pro file.
-    3. Select the appropriate kit for your OS and configure your project.
-    4. Hit 'Build' to compile.
-    5. Once built, click 'Run' in Qt Creator to start the app.
-    6. Launch Qt Creator and choose 'Open Project'.
-    7. Navigate to your project's directory and select the .pro file.
-    8. Select the appropriate kit for your OS and configure your project.
-    9. Hit 'Build' to compile.
-    10. Once built, click 'Run' in Qt Creator to start the app.
+1. Launch Qt Creator and choose `Open Project`.
+2. Navigate to your project's directory and select  the .pro file.
+3. Select the appropriate kit for your OS and configure your project.
+4. Hit `Build` to compile.
+5. Once built, click `Run` in Qt Creator to start the app.
+6. Launch Qt Creator and choose `Open Project`.
+7. Navigate to your project's directory and select the .pro file.
+8. Select the appropriate kit for your OS and configure your project.
+9. Hit `Build` to compile.
+10. Once built, click `Run` in Qt Creator to start the app.
 
 ### Using the Command Line 💻
 
