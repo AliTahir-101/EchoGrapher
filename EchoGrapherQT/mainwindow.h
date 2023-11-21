@@ -32,13 +32,17 @@ private slots:
     void on_startButton_clicked();
     void on_stopButton_clicked();
     void on_selectOutputPathButton_clicked();
+
     void on_zoomInButton_clicked();
     void on_zoomOutButton_clicked();
+    void on_resetZoomButton_clicked();
 
     // UI Slider Options
     void on_windowSizeslider_valueChanged(int value);
     void on_melBandSlider_valueChanged(int value);
     void on_overlapSlider_valueChanged(int value);
+
+
 
 private:
     Ui::MainWindow *ui;

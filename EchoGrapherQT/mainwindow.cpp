@@ -193,10 +193,17 @@ void MainWindow::on_overlapSlider_valueChanged(int value)
     ui->overlapLabel->setText("Overlap: " + QString::number(overlap, 'f', 1) + "%"); // Display the value with one decimal place
 }
 
-void MainWindow::on_zoomInButton_clicked() {
+void MainWindow::on_zoomInButton_clicked()
+{
     ui->graphicsView->scale(1.1, 1.1); // Zoom in by 10%
 }
 
-void MainWindow::on_zoomOutButton_clicked() {
+void MainWindow::on_zoomOutButton_clicked()
+{
     ui->graphicsView->scale(0.9, 0.9); // Zoom out by 10%
+}
+
+void MainWindow::on_resetZoomButton_clicked()
+{
+    ui->graphicsView->resetTransform();
 }
