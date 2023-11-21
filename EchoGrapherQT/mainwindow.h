@@ -32,6 +32,8 @@ private slots:
     void on_startButton_clicked();
     void on_stopButton_clicked();
     void on_selectOutputPathButton_clicked();
+    void on_zoomInButton_clicked();
+    void on_zoomOutButton_clicked();
 
     // UI Slider Options
     void on_windowSizeslider_valueChanged(int value);
