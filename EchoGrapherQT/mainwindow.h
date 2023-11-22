@@ -20,6 +20,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void InitializePortAudio();
+    void setOutputPath(const QString& path);
 
 private slots:
     // Slot for handling the creation of the spectrogram visualization

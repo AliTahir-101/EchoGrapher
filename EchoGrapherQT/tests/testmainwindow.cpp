@@ -6,6 +6,7 @@
 #include <QGraphicsRectItem>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QLineEdit>
 #include <QSlider>
 #include <QTimer>
 #include <QLabel>
@@ -16,16 +17,6 @@ TestMainWindow::TestMainWindow(QObject *parent)
     : QObject(parent)
 {
     // Constructor implementation, if needed
-}
-
-void TestMainWindow::initTestCase()
-{
-    // Perform global setup for all tests here, if necessary
-}
-
-void TestMainWindow::cleanupTestCase()
-{
-    // Perform global cleanup for all tests here, if necessary
 }
 
 void TestMainWindow::testStartStopProcessing()
@@ -44,6 +35,30 @@ void TestMainWindow::testStartStopProcessing()
     QTest::mouseClick(mainWindow.findChild<QPushButton *>("stopButton"), Qt::LeftButton);
     QApplication::processEvents(); // Process events to ensure signals are dispatched
     QCOMPARE(stopSpy.count(), 1);  // Verify that processing has stopped
+}
+
+void TestMainWindow::testSelectOutputPath()
+{
+    MainWindow mainWindow;
+    mainWindow.show();
+    QApplication::processEvents(); // Ensure the UI updates are processed
+
+    // Find the QLineEdit for the output path
+    QLineEdit *outputPathLineEdit = mainWindow.findChild<QLineEdit *>("outputPathLineEdit");
+    QVERIFY(outputPathLineEdit); // Ensure the line edit is found
+
+    // Simulate setting the output path
+    QString testPath = "/test/path";
+    QString defaultPath = "/EchoGrapher/output";
+    mainWindow.setOutputPath(testPath);
+
+    // Verify that the output path in the line edit is set correctly
+    QCOMPARE(outputPathLineEdit->text(), testPath);
+    QCOMPARE(mainWindow.audioProcessor->setOutputPath(testPath), testPath);
+
+    // Verify it's able to set the default path
+    QString returnedValue = mainWindow.audioProcessor->setOutputPath("");
+    QVERIFY(returnedValue.contains(defaultPath));
 }
 
 void TestMainWindow::testSpectrogramUpdates()
@@ -107,7 +122,7 @@ void TestMainWindow::testOverlapSlider()
     QCOMPARE(overlapSlider->orientation(), Qt::Vertical);
 
     // Set the slider to a new test value within the valid range
-    const float testValue = 120; // Choose a value within the slider's range
+    const float testValue = 120;      // Choose a value within the slider's range
     float overlap = testValue * 0.5f; // Convert the slider value to the actual overlap percentage
     overlapSlider->setValue(testValue);
     QApplication::processEvents(); // Ensure the slider movement is processed
@@ -157,7 +172,6 @@ void TestMainWindow::testZoomFunctions()
     MainWindow mainWindow;
     mainWindow.show(); // Necessary to render the QGraphicsView
 
-    // Assuming MainWindow has public slots for zooming
     QGraphicsView *view = mainWindow.findChild<QGraphicsView *>("graphicsView");
 
     qreal initialScaleFactor = view->transform().m11();

@@ -202,9 +202,14 @@ void MainWindow::on_selectOutputPathButton_clicked()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Output Directory"),
                                                     "/home",
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    ui->outputPathLineEdit->setText(dir);
-    // Pass the dir to the audio processor
-    audioProcessor->setOutputPath(dir);
+    setOutputPath(dir);
+}
+
+void MainWindow::setOutputPath(const QString& path)
+{
+    ui->outputPathLineEdit->setText(path);
+    // Pass the path to the audio processor
+    audioProcessor->setOutputPath(path);
 }
 
 void MainWindow::on_windowSizeslider_valueChanged(int value)
