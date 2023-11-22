@@ -10,5 +10,5 @@ INCLUDEPATH += ../ # Include the path to the main application headers
 SOURCES += testmainwindow.cpp
 HEADERS += testmainwindow.h
 
-# Link to the QtTest module
-QT += testlib
+# Link to the Qt modules
+QT += testlib widgets
