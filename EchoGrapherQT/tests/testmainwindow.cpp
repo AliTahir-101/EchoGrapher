@@ -87,7 +87,36 @@ void TestMainWindow::testWindowSizeSlider()
 
 void TestMainWindow::testOverlapSlider()
 {
-    // TODO: implement test
+    MainWindow mainWindow;
+    mainWindow.show();
+    QApplication::processEvents(); // Ensure the UI updates are processed
+
+    // Find the slider and label
+    QSlider *overlapSlider = mainWindow.findChild<QSlider *>("overlapSlider");
+    QLabel *overlapLabel = mainWindow.findChild<QLabel *>("overlapLabel");
+
+    QVERIFY(overlapSlider); // Ensure the slider is found
+    QVERIFY(overlapLabel);  // Ensure the label is found
+
+    // Verify the slider's initial properties
+    QCOMPARE(overlapSlider->value(), 100);
+    QCOMPARE(overlapSlider->minimum(), 50);
+    QCOMPARE(overlapSlider->maximum(), 150);
+    QCOMPARE(overlapSlider->singleStep(), 1);
+    QCOMPARE(overlapSlider->pageStep(), 1);
+    QCOMPARE(overlapSlider->orientation(), Qt::Vertical);
+
+    // Set the slider to a new test value within the valid range
+    const float testValue = 120; // Choose a value within the slider's range
+    float overlap = testValue * 0.5f; // Convert the slider value to the actual overlap percentage
+    overlapSlider->setValue(testValue);
+    QApplication::processEvents(); // Ensure the slider movement is processed
+
+    // Check the value on the audioProcessor
+    QCOMPARE(mainWindow.audioProcessor->windowOverlap, overlap / 100.0f);
+
+    // Check the label text
+    QCOMPARE(overlapLabel->text(), "Overlap: " + QString::number(overlap, 'f', 1) + "%");
 }
 
 void TestMainWindow::testMelBandSlider()
