@@ -4,6 +4,11 @@
 #include <QSignalSpy>
 #include <QTest>
 
+TestMainWindow::TestMainWindow(QObject *parent)
+    : QObject(parent) {
+    // Constructor implementation, if needed
+}
+
 void TestMainWindow::initTestCase() {
     // Perform global setup for all tests here, if necessary
 }
