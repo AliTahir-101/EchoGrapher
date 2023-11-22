@@ -9,10 +9,14 @@ INCLUDEPATH += $$PWD/../../build-EchoGrapherQT-Desktop_Qt_6_6_0_GCC_64bit-Debug 
 
 # Add the sources and headers from the test directory
 SOURCES += testmainwindow.cpp \
-           ../mainwindow.cpp
+           ../mainwindow.cpp \
+           ../audioprocessor.cpp
+
 HEADERS += testmainwindow.h \
-           ../mainwindow.h
+           ../mainwindow.h \
+           ../audioprocessor.h
 
-
-# Link to the Qt modules
+# Link to the Qt modules and any additional libraries
 QT += testlib widgets
+LIBS += -lportaudio
+LIBS += -lfftw3f
