@@ -24,7 +24,7 @@ AudioProcessor::~AudioProcessor() {}
 void AudioProcessor::stopProcessing()
 {
 
-    cout << "STop it ......." << endl;
+//    cout << "STop it ......." << endl;
     stopFlag.store(true);
 
     if (audioInputThread)
@@ -47,7 +47,7 @@ void AudioProcessor::stopProcessing()
 void AudioProcessor::startProcessing()
 {
 
-    cout << "Start it ..." << endl;
+//    cout << "Start it ..." << endl;
     stopFlag.store(false);
 
     // Start the audio input thread
