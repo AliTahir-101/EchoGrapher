@@ -12,12 +12,13 @@ public:
 
 private slots:
     void testStartStopProcessing(); // Tests the start and stop functionality
-    void testSpectrogramUpdates();  // Tests the spectrogram update mechanism
     void testZoomFunctions();       // Tests the zoom in, zoom out, and reset zoom functionality
     void testWindowSizeSlider();
     void testMelBandSlider();
     void testOverlapSlider();
     void testSelectOutputPath();
+    void testOnNewSpectrogram();
+    void testUpdateSpectrogram();
 };
 
 #endif // TESTMAINWINDOW_H

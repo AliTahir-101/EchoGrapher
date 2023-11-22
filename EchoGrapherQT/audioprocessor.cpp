@@ -6,6 +6,7 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QDateTime>
+#include <QDebug>
 
 using namespace std;
 
@@ -277,6 +278,7 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
 
             // Convert the FFT data to the Mel spectrum
             QVector<float> melSpectrum = ConvertToMelSpectrum(out, windowSize, sampleRate);
+            qDebug() << "Mel Spectrum Data:" << melSpectrum;
             emit newLogMelSpectrogram(melSpectrum);
             // Remove the processed frame considering the overlap
             audioBuffer.remove(0, hopSize);

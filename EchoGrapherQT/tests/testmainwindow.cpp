@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <QTest>
+#include <QList>
 #include <iostream>
 
 TestMainWindow::TestMainWindow(QObject *parent)
@@ -59,6 +60,32 @@ void TestMainWindow::testSelectOutputPath()
     // Verify it's able to set the default path
     QString returnedValue = mainWindow.audioProcessor->setOutputPath("");
     QVERIFY(returnedValue.contains(defaultPath));
+}
+
+void TestMainWindow::testOnNewSpectrogram() {
+    MainWindow mainWindow;
+    QVector<float> testSpectrumData = {0.0203141, 0.00048133, 0.000669171, 0.00100052, 0.000300419, 0.000367233, 0.000325938, 0.000227044, 0.000233241, 0.000766388, 0.000296657, 0.000189793, 0.00015413, 0.000208378, 0.000153141, 0.000188466, 0.000146239, 0.000158019, 0.000303223, 0.00049933, 0.000510337, 0.000743311, 0.00056952, 0.00062953, 0.000208701};
+
+    mainWindow.onNewSpectrogram(testSpectrumData);
+
+    // Check if the spectrum buffer is updated
+    QCOMPARE(mainWindow.spectrumBuffer.last(), testSpectrumData);
+}
+
+void TestMainWindow::testUpdateSpectrogram() {
+    MainWindow mainWindow;
+    mainWindow.show();
+    QApplication::processEvents(); // Ensure the UI updates are processed
+
+    // Assuming there's a way to access the spectrumBuffer or manipulate it for the test
+    QVector<float> testSpectrumData = {0.0203141, 0.00048133, 0.000669171, 0.00100052, 0.000300419, 0.000367233, 0.000325938, 0.000227044, 0.000233241, 0.000766388, 0.000296657, 0.000189793, 0.00015413, 0.000208378, 0.000153141, 0.000188466, 0.000146239, 0.000158019, 0.000303223, 0.00049933, 0.000510337, 0.000743311, 0.00056952, 0.00062953, 0.000208701};
+
+    mainWindow.spectrumBuffer.append(testSpectrumData);
+
+    mainWindow.updateSpectrogram();
+
+    // Validate that the buffer was cleared after updating the spectrogram
+    QVERIFY(mainWindow.spectrumBuffer.isEmpty());
 }
 
 void TestMainWindow::testSpectrogramUpdates()
