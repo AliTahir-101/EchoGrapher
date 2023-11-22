@@ -37,6 +37,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->setBackgroundBrush(QBrush(Qt::black));
     this->setMaximumSize(QSize(1260, 820));
+
+    // Connect the buttons to the slots in the MainWindow constructor
+    connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startProcessing);
+    connect(ui->stopButton, &QPushButton::clicked, this, &MainWindow::stopProcessing);
+
     // Connect the AudioProcessor signals to the MainWindow slots
     connect(audioProcessor, &AudioProcessor::newLogMelSpectrogram, this, &MainWindow::onNewSpectrogram);
     connect(audioProcessor, &AudioProcessor::errorOccurred, this, &MainWindow::onErrorOccurred);
@@ -85,6 +90,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::startProcessing()
 {
+    emit processingStarted(); // Emit the signal to notify other parts of the app
+    this->setFocus(Qt::OtherFocusReason);
     audioProcessor->startProcessing();  // Start with desired sample rate
     ui->startButton->setEnabled(false); // Disable start button
     ui->startButton->setStyleSheet("QPushButton { color: gray; }");
@@ -99,6 +106,8 @@ void MainWindow::startProcessing()
 
 void MainWindow::stopProcessing()
 {
+    emit processingStopped();
+    this->setFocus(Qt::OtherFocusReason);
     audioProcessor->stopProcessing();  // Stop processing
     ui->startButton->setEnabled(true); // Re-enable start button
     ui->startButton->setStyleSheet("QPushButton { color: white; }");
@@ -186,18 +195,6 @@ void MainWindow::onErrorOccurred(const QString &errorMessage)
 {
     QMessageBox::critical(this, tr("Error"), errorMessage);
     stopProcessing(); // Stop processing if there's an error
-}
-
-void MainWindow::on_startButton_clicked()
-{
-    MainWindow::startProcessing();
-    this->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWindow::on_stopButton_clicked()
-{
-    MainWindow::stopProcessing();
-    this->setFocus(Qt::OtherFocusReason);
 }
 
 void MainWindow::on_selectOutputPathButton_clicked()

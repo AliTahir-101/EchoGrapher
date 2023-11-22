@@ -21,14 +21,16 @@ void TestMainWindow::testStartStopProcessing() {
     MainWindow mainWindow;
     mainWindow.show(); // Necessary to render the UI for interaction
 
-    // Assuming MainWindow emits signals when processing starts and stops
-    QSignalSpy startSpy(&mainWindow, &MainWindow::startProcessing);
-    QSignalSpy stopSpy(&mainWindow, &MainWindow::stopProcessing);
+    // Spy on the new signals that are emitted when processing starts and stops
+    QSignalSpy startSpy(&mainWindow, &MainWindow::processingStarted);
+    QSignalSpy stopSpy(&mainWindow, &MainWindow::processingStopped);
 
     QTest::mouseClick(mainWindow.findChild<QPushButton*>("startButton"), Qt::LeftButton);
+    QApplication::processEvents(); // Process events to ensure signals are dispatched
     QCOMPARE(startSpy.count(), 1); // Verify that processing has started
 
     QTest::mouseClick(mainWindow.findChild<QPushButton*>("stopButton"), Qt::LeftButton);
+    QApplication::processEvents(); // Process events to ensure signals are dispatched
     QCOMPARE(stopSpy.count(), 1); // Verify that processing has stopped
 }
 

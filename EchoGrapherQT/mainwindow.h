@@ -30,8 +30,6 @@ private slots:
     void stopProcessing();
 
     // UI Visualization Click Events
-    void on_startButton_clicked();
-    void on_stopButton_clicked();
     void on_selectOutputPathButton_clicked();
 
     void on_zoomInButton_clicked();
@@ -43,7 +41,9 @@ private slots:
     void on_melBandSlider_valueChanged(int value);
     void on_overlapSlider_valueChanged(int value);
 
-
+signals:
+    void processingStarted();
+    void processingStopped();
 
 private:
     Ui::MainWindow *ui;
