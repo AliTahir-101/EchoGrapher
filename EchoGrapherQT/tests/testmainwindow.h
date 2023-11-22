@@ -16,6 +16,9 @@ private slots:
     void testSpectrogramUpdates();   // Tests the spectrogram update mechanism
     void testSliderAdjustments();    // Tests the sliders for adjusting parameters
     void testZoomFunctions();        // Tests the zoom in, zoom out, and reset zoom functionality
+    void testWindowSizeSlider();
+    void testMelBandSlider();
+    void testOverlapSlider();
 };
 
 #endif // TESTMAINWINDOW_H
