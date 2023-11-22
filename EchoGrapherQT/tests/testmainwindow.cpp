@@ -64,3 +64,4 @@ void TestMainWindow::testZoomFunctions() {
     qreal resetScaleFactor = view->transform().m11();
     QCOMPARE(resetScaleFactor, 1.0);
 }
+QTEST_MAIN(TestMainWindow)
