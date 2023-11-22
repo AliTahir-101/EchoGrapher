@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void InitializePortAudio();
 
 private slots:
     // Slot for handling the creation of the spectrogram visualization

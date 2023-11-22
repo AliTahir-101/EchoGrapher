@@ -9,6 +9,13 @@
 #include <QLinearGradient>
 #include <QGraphicsRectItem>
 
+#include <cstdio>
+#if defined(_WIN32)
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
@@ -24,11 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
     ui->outputPathLineEdit->setText(audioProcessor->setOutputPath(""));
 
-    PaError err = Pa_Initialize(); // Calling Library initialization function
-    if (err != paNoError)
-    {
-        QMessageBox::critical(this, tr("PortAudio Error"), tr("Error initializing PortAudio: %1").arg(Pa_GetErrorText(err)));
-    }
+    InitializePortAudio();
 
     // Set up the initial QGraphicsScene for the spectrogram visualization
     ui->graphicsView->setScene(new QGraphicsScene(this));
@@ -37,6 +40,40 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     // Connect the AudioProcessor signals to the MainWindow slots
     connect(audioProcessor, &AudioProcessor::newLogMelSpectrogram, this, &MainWindow::onNewSpectrogram);
     connect(audioProcessor, &AudioProcessor::errorOccurred, this, &MainWindow::onErrorOccurred);
+}
+
+void MainWindow::InitializePortAudio()
+{
+    // Flush stderr to ensure all pending error messages are written
+    fflush(stderr);
+
+    // Save the original stderr file descriptor
+    #if defined(_WIN32)
+        int old_stderr = _dup(_fileno(stderr));
+        freopen("nul", "w", stderr);
+    #else
+        int old_stderr = dup(fileno(stderr));
+        freopen("/dev/null", "w", stderr);
+    #endif
+
+        // Initialize PortAudio (or other operations that generate unwanted messages)
+        PaError err = Pa_Initialize(); // Calling Library initialization function
+        if (err != paNoError)
+        {
+            QMessageBox::critical(this, tr("PortAudio Error"), tr("Error initializing PortAudio: %1").arg(Pa_GetErrorText(err)));
+        }
+
+        // Flush stderr again to ensure any error messages are written to nul or /dev/null
+        fflush(stderr);
+
+        // Restore the original stderr file descriptor
+    #if defined(_WIN32)
+        _dup2(old_stderr, _fileno(stderr));
+        _close(old_stderr);
+    #else
+        dup2(old_stderr, fileno(stderr));
+        ::close(old_stderr);
+    #endif
 }
 
 MainWindow::~MainWindow()
