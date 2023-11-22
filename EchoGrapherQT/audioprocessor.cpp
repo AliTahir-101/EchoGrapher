@@ -1,12 +1,11 @@
 #include "audioprocessor.h"
 #include <portaudio.h>
-#include <QFile>
-#include <QDataStream>
-#include <iostream>
 #include <QStandardPaths>
-#include <QDir>
+#include <QDataStream>
 #include <QDateTime>
-#include <QDebug>
+#include <iostream>
+#include <QFile>
+#include <QDir>
 
 using namespace std;
 
@@ -278,7 +277,6 @@ void AudioProcessor::audioProcessingThreadFunction(uint32_t sampleRate)
 
             // Convert the FFT data to the Mel spectrum
             QVector<float> melSpectrum = ConvertToMelSpectrum(out, windowSize, sampleRate);
-            qDebug() << "Mel Spectrum Data:" << melSpectrum;
             emit newLogMelSpectrogram(melSpectrum);
             // Remove the processed frame considering the overlap
             audioBuffer.remove(0, hopSize);

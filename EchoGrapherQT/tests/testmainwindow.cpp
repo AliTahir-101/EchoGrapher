@@ -1,18 +1,18 @@
 #include "testmainwindow.h"
 #include "qgraphicsview.h"
 #include "qpushbutton.h"
-#include <QSignalSpy>
-#include <QLinearGradient>
 #include <QGraphicsRectItem>
+#include <QLinearGradient>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSignalSpy>
 #include <QLineEdit>
 #include <QSlider>
 #include <QTimer>
 #include <QLabel>
 #include <QTest>
 #include <QList>
-#include <iostream>
+
 
 TestMainWindow::TestMainWindow(QObject *parent)
     : QObject(parent)
@@ -62,7 +62,8 @@ void TestMainWindow::testSelectOutputPath()
     QVERIFY(returnedValue.contains(defaultPath));
 }
 
-void TestMainWindow::testOnNewSpectrogram() {
+void TestMainWindow::testOnNewSpectrogram()
+{
     MainWindow mainWindow;
     QVector<float> testSpectrumData = {0.0203141, 0.00048133, 0.000669171, 0.00100052, 0.000300419, 0.000367233, 0.000325938, 0.000227044, 0.000233241, 0.000766388, 0.000296657, 0.000189793, 0.00015413, 0.000208378, 0.000153141, 0.000188466, 0.000146239, 0.000158019, 0.000303223, 0.00049933, 0.000510337, 0.000743311, 0.00056952, 0.00062953, 0.000208701};
 
@@ -72,7 +73,8 @@ void TestMainWindow::testOnNewSpectrogram() {
     QCOMPARE(mainWindow.spectrumBuffer.last(), testSpectrumData);
 }
 
-void TestMainWindow::testUpdateSpectrogram() {
+void TestMainWindow::testUpdateSpectrogram()
+{
     MainWindow mainWindow;
     mainWindow.show();
     QApplication::processEvents(); // Ensure the UI updates are processed
@@ -86,12 +88,6 @@ void TestMainWindow::testUpdateSpectrogram() {
 
     // Validate that the buffer was cleared after updating the spectrogram
     QVERIFY(mainWindow.spectrumBuffer.isEmpty());
-}
-
-void TestMainWindow::testSpectrogramUpdates()
-{
-    // This test case will require more information about how spectrogram updates are handled
-    // and how to simulate newLogMelSpectrogram signal emissions
 }
 
 void TestMainWindow::testWindowSizeSlider()
