@@ -24,6 +24,7 @@ private slots:
     void testConvertToMelSpectrum();
     void testStartProcessing();
     void testStopProcessing();
+    void testFrequencyToMel();
 };
 
 #endif // TESTAUDIOPROCESSOR_H

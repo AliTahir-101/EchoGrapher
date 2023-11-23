@@ -53,28 +53,32 @@ void TestAudioProcessor::testAudioProcessingThreadFunction()
 
 void TestAudioProcessor::testSetOutputPath()
 {
-    AudioProcessor processor;
+    processor = new AudioProcessor(this);
     QString path = "some/path";
-    QString result = processor.setOutputPath(path);
+    QString result = processor->setOutputPath(path);
     QCOMPARE(result, path);
 
     // Test the default path logic.
-    QString defaultResult = processor.setOutputPath("");
+    QString defaultResult = processor->setOutputPath("");
     QVERIFY(!defaultResult.isEmpty());
+    delete processor;
 };
 
 void TestAudioProcessor::testConvertToMelSpectrum()
 {
+    processor = new AudioProcessor(this);
     // Prepare sample FFT data
     fftwf_complex sampleFFTData[10]; // Just an example size
     // Fill sampleFFTData with test values...
 
     // Call the method
     QVector<float> melSpectrum = processor->ConvertToMelSpectrum(sampleFFTData, 10, 44100);
+    delete processor;
 }
 
 void TestAudioProcessor::testCreateMelFilterbank()
 {
+    processor = new AudioProcessor(this);
     // Call the method
     QVector<QVector<float>> filterbank = processor->CreateMelFilterbank(10, 512, 44100);
 
@@ -87,10 +91,12 @@ void TestAudioProcessor::testCreateMelFilterbank()
     {
         QCOMPARE(filter.size(), 512 / 2);
     }
+    delete processor;
 }
 
 void TestAudioProcessor::testMelFrequencyConversion()
 {
+    processor = new AudioProcessor(this);
     // Test frequency to Mel conversion
     float frequency = 440.0f; // A4 note
     float mel = processor->FrequencyToMel(frequency);
@@ -99,6 +105,7 @@ void TestAudioProcessor::testMelFrequencyConversion()
     float inverseFrequency = processor->MelToFrequency(mel);
     // Check that the inverse conversion returns to the original frequency
     QCOMPARE(inverseFrequency, frequency);
+    delete processor;
 }
 
 void TestAudioProcessor::testStartProcessing()
@@ -127,5 +134,25 @@ void TestAudioProcessor::testStopProcessing()
 
     QVERIFY(processor->stopFlag.load());
 
+    delete processor; // Clean up after the test
+}
+
+void TestAudioProcessor::testFrequencyToMel()
+{
+    processor = new AudioProcessor(this);
+    // Test with a known frequency to Mel conversion
+    float frequency = 440.0f;   // Frequency of the A4 note
+    float expectedMel = 548.7f; // Mel value for 440 Hz
+
+    float actualMel = processor->FrequencyToMel(frequency);
+    float tolerance = 1.0f; // Define a reasonable tolerance
+
+    QVERIFY(qAbs(actualMel - expectedMel) <= tolerance); // Verify that the actual value is within the tolerance range
+
+    // Test edge cases like zero frequency
+    float zeroFrequency = 0.0f;
+    float expectedMelForZero = 0.0f; // The Mel value for 0 Hz should be 0
+    float actualMelForZero = processor->FrequencyToMel(zeroFrequency);
+    QCOMPARE(actualMelForZero, expectedMelForZero);
     delete processor; // Clean up after the test
 }
