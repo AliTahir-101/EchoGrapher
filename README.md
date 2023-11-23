@@ -2,7 +2,6 @@
 
 This project was developed as part of a technical interview process for [Supplyz.eu](https://supplyz.eu). The task was to create a cross-platform audio analysis tool capable of recording and visualizing audio spectrograms in real time.
 
-
 # 🎵 Audio Spectrogram Visualizer - EchoGrapher 🎛️
 
 ## Overview 🌐
@@ -69,8 +68,9 @@ Install the following prerequisites before proceeding:
    ```
 
 ### Using Qt Creator 🛠️ (Recommended)
+
 1. Launch Qt Creator and choose `Open Project`.
-2. Navigate to your project's directory and select  the .pro file.
+2. Navigate to your project's directory and select the .pro file.
 3. Select the appropriate kit for your OS and configure your project.
 4. Hit `Build` to compile.
 5. Once built, click `Run` in Qt Creator to start the app.
@@ -121,7 +121,7 @@ Execute the EchoGrapherQT binary `./EchoGrapherQT` to launch the app or In Windo
 
 ### Testing 🧪
 
-Unit and integration tests are located within the tests directory. See [TESTING.md](https://github.com/AliTahir-101/EchoGrapher/TESTING.md) for execution instructions.
+Unit and integration tests are located within the tests directory. See [TESTING.md](https://github.com/AliTahir-101/EchoGrapher/blob/main/TESTING.md) for execution instructions.
 
 ### Version Control 🔄
 
