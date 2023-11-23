@@ -37,6 +37,7 @@ struct WAVHeader
 class AudioProcessor : public QObject
 {
     Q_OBJECT
+    friend class TestAudioProcessor;
 
 public:
     int numMelFilters = 25;
