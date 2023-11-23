@@ -53,6 +53,9 @@ Once the build process is complete, you can run the tests by executing the `test
 
 This will execute all the test cases and display the results in the terminal.
 
+### Test Results
+![image](https://github.com/AliTahir-101/EchoGrapher/assets/76158157/be1d3903-c627-4a05-b3c6-ac296c006f56)
+
 ### Troubleshooting
 
 If you encounter any issues, please refer to the following troubleshooting steps:
