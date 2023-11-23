@@ -16,6 +16,8 @@ private:
     AudioProcessor *processor;
 
 private slots:
+    void initTestCase();
+    void cleanupTestCase();
     void testAudioInputThreadFunction();
     void testSetOutputPath();
     void testAudioProcessingThreadFunction();
