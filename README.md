@@ -133,4 +133,4 @@ Ali Tahir - Initial work - [GitHub](https://github.com/AliTahir-101)
 
 ### Troubleshooting 🛠️
 
-Encountering issues? Please consult [TROUBLESHOOTING.md](https://github.com/AliTahir-101/EchoGrapher/TROUBLESHOOTING.md) or raise an issue in the repository.
+Encountering issues? Please consult [TROUBLESHOOTING.md](https://github.com/AliTahir-101/EchoGrapher/blob/main/TROUBLESHOOTING.md) or raise an issue in the repository.
