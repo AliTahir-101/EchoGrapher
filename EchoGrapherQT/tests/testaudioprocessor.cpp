@@ -107,6 +107,8 @@ void TestAudioProcessor::testStartProcessing()
     processor->startProcessing();     // Call startProcessing
 
     QVERIFY(!processor->stopFlag.load());
+    QVERIFY(processor->audioInputThread->isRunning());
+    QVERIFY(processor->audioProcessingThread->isRunning());
 
     processor->stopProcessing();
     delete processor;
@@ -118,6 +120,8 @@ void TestAudioProcessor::testStopProcessing()
     processor->startProcessing();     // Call startProcessing
 
     QVERIFY(!processor->stopFlag.load());
+    QVERIFY(processor->audioInputThread->isRunning());
+    QVERIFY(processor->audioProcessingThread->isRunning());
 
     processor->stopProcessing();
 
