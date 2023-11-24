@@ -197,18 +197,12 @@
         <property name="text">
          <string>Start Rec.</string>
         </property>
-        <property name="icon">
-         <iconset theme="media-record"/>
-        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="stopButton">
         <property name="text">
          <string>Stop Rec.</string>
-        </property>
-        <property name="icon">
-         <iconset theme="media-playback-stop"/>
         </property>
        </widget>
       </item>

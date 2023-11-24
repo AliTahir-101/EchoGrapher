@@ -415,7 +415,7 @@ void MainWindow::customizeSliders()
         "    margin: 0 0;"     // The margin used here to extend the handle beyond the groove
         "}"
         "QSlider::add-page:vertical {"
-        "    background: #d74641;" // Color of the area before the handle
+        "    background: #24a0c6;" // Color of the area before the handle
         "}"
         "QSlider::sub-page:vertical {"
         "    background: #1b1c27;" // Color of the area after the handle
@@ -433,7 +433,7 @@ void MainWindow::customizeSliders()
         "    margin: -1px 0;"     // The margin used here to extend the handle beyond the groove
         "}"
         "QSlider::add-page:vertical {"
-        "    background: #d74641;" // Color of the area before the handle
+        "    background: #24a0c6;" // Color of the area before the handle
         "}"
         "QSlider::sub-page:vertical {"
         "    background: #1b1c27;" // Color of the area after the handle
@@ -451,7 +451,7 @@ void MainWindow::customizeSliders()
         "    margin: -1px 0;"     // The margin used here to extend the handle beyond the groove
         "}"
         "QSlider::add-page:vertical {"
-        "    background: #d74641;" // Color of the area before the handle
+        "    background: #24a0c6;" // Color of the area before the handle
         "}"
         "QSlider::sub-page:vertical {"
         "    background: #1b1c27;" // Color of the area after the handle
