@@ -2,10 +2,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
 #include <QTimer>
 #include <iostream>
 #include <QFileDialog>
-#include <QMouseEvent>
 #include <QMessageBox>
 #include <QLinearGradient>
 #include <QGraphicsRectItem>
@@ -22,6 +22,7 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow),
                                           dragPosition(0, 0),
+                                          dragging(false),
                                           audioProcessor(new AudioProcessor(this))
 {
     setWindowFlags(Qt::FramelessWindowHint); // Set frameless window
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->setupUi(this); // Set up the UI as defined by the .ui file
 
     // Create the custom title bar
-    QWidget *titleBar = new QWidget();
+    titleBar = new QWidget();
     titleBar->setStyleSheet("background-color: #1b1d27;");
     titleBar->setFixedHeight(60);
 
@@ -131,16 +132,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(audioProcessor, &AudioProcessor::errorOccurred, this, &MainWindow::onErrorOccurred);
 }
 
-void MainWindow::toggleMaximizeRestore()
+MainWindow::~MainWindow()
 {
-    if (isMaximized())
-    {
-        showNormal();
-    }
-    else
-    {
-        showMaximized();
-    }
+    MainWindow::stopProcessing();
+    Pa_Terminate();
+    delete ui;
 }
 
 void MainWindow::InitializePortAudio()
@@ -167,7 +163,7 @@ void MainWindow::InitializePortAudio()
     // Flush stderr again to ensure any error messages are written to nul or /dev/null
     fflush(stderr);
 
-    // Restore the original stderr file descriptor
+// Restore the original stderr file descriptor
 #if defined(_WIN32)
     _dup2(old_stderr, _fileno(stderr));
     _close(old_stderr);
@@ -177,29 +173,77 @@ void MainWindow::InitializePortAudio()
 #endif
 }
 
-MainWindow::~MainWindow()
+void MainWindow::toggleMaximizeRestore()
 {
-    MainWindow::stopProcessing();
-    Pa_Terminate();
-    delete ui;
+    if (isMaximized())
+    {
+        showNormal();
+    }
+    else
+    {
+        showMaximized();
+    }
+}
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    // Check if the double-click is within the title bar area
+    if (titleBar->rect().contains(titleBar->mapFromGlobal(event->globalPos())))
+    {
+        MainWindow::toggleMaximizeRestore();
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        dragPosition = event->globalPos() - frameGeometry().topLeft();
-        event->accept();
+        if (titleBar->rect().contains(titleBar->mapFromGlobal(event->globalPos())))
+        {
+            dragPosition = event->globalPos() - frameGeometry().topLeft();
+            dragging = true;
+            event->accept();
+        }
     }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton)
+    if ((event->buttons() & Qt::LeftButton) && dragging)
     {
-        move(event->globalPos() - dragPosition);
+        const QPoint newGlobalPos = event->globalPos();
+        QPoint newPos = newGlobalPos - dragPosition;
+
+        // Get the screen that contains the cursor
+        QScreen *screen = QGuiApplication::screenAt(newGlobalPos);
+        if (!screen)
+        {
+            return; // If for some reason no screen is found, do nothing
+        }
+
+        // Get the available geometry of the screen
+        QRect availableGeometry = screen->availableGeometry();
+
+        // Define margins that should always remain visible on screen
+        const int visibleMargin = 10; // Only 10 pixels of the window header will remain visible
+
+        // Adjust the new position to ensure the window's visible margins remain on-screen
+        int newX = qMax(availableGeometry.left() - width() + visibleMargin, newPos.x());
+        newX = qMin(availableGeometry.right() - visibleMargin, newX);
+
+        int newY = qMax(availableGeometry.top() - height() + visibleMargin, newPos.y());
+        newY = qMin(availableGeometry.bottom() - visibleMargin, newY);
+        qDebug() << "newX:" << newX << "newY:" << newY;
+        move(newX, newY);
         event->accept();
     }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    qDebug() << "Mouse Release Event";
+    Q_UNUSED(event);
+    dragging = false; // Stop dragging
 }
 
 void MainWindow::startProcessing()

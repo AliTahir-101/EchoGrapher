@@ -4,6 +4,8 @@
 #include "audioprocessor.h"
 
 #include <QMainWindow>
+#include <QMouseEvent>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -55,10 +57,14 @@ private:
     QVector<QVector<float>> spectrumBuffer;
     QTimer *updateTimer;
     QPoint dragPosition; // The dragPosition variable
+    bool dragging;
+    QWidget *titleBar;
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
