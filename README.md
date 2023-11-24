@@ -8,6 +8,8 @@ This project was developed as part of a technical interview process for [Supplyz
 
 EchoGrapher is a cross-platform desktop tool designed for audio analysis and visualization. It captures audio through your system's microphone and renders a real-time log mel spectrogram a sophisticated visual representation of sound frequency and amplitude over time.
 
+https://github.com/AliTahir-101/EchoGrapher/assets/76158157/eb8ef245-bee4-44bf-8fd5-a6c23922b468
+
 ## Features 🚀
 
 - 🔊 Real-time audio recording and visualization
