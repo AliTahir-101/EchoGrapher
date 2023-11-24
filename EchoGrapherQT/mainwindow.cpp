@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <iostream>
 #include <QFileDialog>
+#include <QMouseEvent>
 #include <QMessageBox>
 #include <QLinearGradient>
 #include <QGraphicsRectItem>
@@ -20,23 +21,106 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow),
+                                          dragPosition(0, 0),
                                           audioProcessor(new AudioProcessor(this))
 {
+    setWindowFlags(Qt::FramelessWindowHint); // Set frameless window
 
-    ui->setupUi(this);
+    ui->setupUi(this); // Set up the UI as defined by the .ui file
+
+    // Create the custom title bar
+    QWidget *titleBar = new QWidget();
+    titleBar->setStyleSheet("background-color: #1b1d27;");
+    titleBar->setFixedHeight(60);
+
+    // Load the application icon
+    QLabel *iconLabel = new QLabel(titleBar);
+    QPixmap appIcon(":/assets/appicon.png");
+    iconLabel->setPixmap(appIcon.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation)); // Scale the icon to fit the title bar
+    iconLabel->setContentsMargins(0, 0, 60, 0);
+
+    // Create the title label with centered alignment
+    QLabel *titleLabel = new QLabel("EchoGrapher", titleBar);
+    titleLabel->setAlignment(Qt::AlignCenter);
+    //    titleLabel->setContentsMargins(60, 0, 0, 0);
+
+    // Customize the font
+    QFont titleFont = titleLabel->font();
+    titleFont.setFamily("Arial"); // Set the font family to Arial or any other
+    titleFont.setPointSize(12);   // Set the font size
+    titleFont.setBold(true);      // Make the font bold
+    titleLabel->setFont(titleFont);
+
+    // Set the text color using a style sheet
+    titleLabel->setStyleSheet("QLabel { color : white; }"); // Set the color to white or any other
+
+    QHBoxLayout *titleLayout = new QHBoxLayout(titleBar);
+    titleLayout->setContentsMargins(0, 0, 0, 0); // Remove margins from the title layout
+
+    titleLayout->addWidget(iconLabel);     // Add the icon label to the layout
+    titleLayout->addStretch();             // Spacer to push the title to the center
+    titleLayout->addWidget(titleLabel, 1); // Add the title label to the layout
+    titleLayout->addStretch();             // Another spacer to ensure the title stays centered
+
+    // Set up button size and icon size
+    const QSize buttonSize(32, 32);
+
+    QPushButton *minimizeButton = new QPushButton(titleBar);
+    minimizeButton->setIcon(QIcon(":/assets/minimize.png"));
+    minimizeButton->setIconSize(buttonSize);
+    minimizeButton->setFixedSize(buttonSize);
+    minimizeButton->setFlat(true);
+
+    QPushButton *maximizeButton = new QPushButton(titleBar);
+    maximizeButton->setIcon(QIcon(":/assets/maximize.png"));
+    maximizeButton->setIconSize(buttonSize);
+    maximizeButton->setFixedSize(buttonSize);
+    maximizeButton->setFlat(true);
+
+    QPushButton *closeButton = new QPushButton(titleBar);
+    closeButton->setIcon(QIcon(":/assets/close.png"));
+    closeButton->setIconSize(buttonSize);
+    closeButton->setFixedSize(buttonSize);
+    closeButton->setFlat(true);
+
+    //    closeButton->setContentsMargins(0, 0, 60, 0);
+    titleLayout->addWidget(minimizeButton);
+    titleLayout->addWidget(maximizeButton);
+    titleLayout->addWidget(closeButton);
+
+    // Add a fixed-width spacer to push the buttons to the left
+    int spacerWidth = 10;
+    QSpacerItem *rightSpacer = new QSpacerItem(spacerWidth, 1, QSizePolicy::Fixed, QSizePolicy::Fixed);
+    titleLayout->addSpacerItem(rightSpacer);
+
+    connect(maximizeButton, &QPushButton::clicked, this, &MainWindow::toggleMaximizeRestore);
+    connect(minimizeButton, &QPushButton::clicked, this, &MainWindow::showMinimized);
+    connect(closeButton, &QPushButton::clicked, this, &MainWindow::close);
+
+    // Add the custom title bar to the main window layout
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    mainLayout->setContentsMargins(0, 0, 0, 0); // Remove margins
+    mainLayout->addWidget(titleBar);            // Add title bar first
+    mainLayout->addWidget(ui->centralwidget);   // Then add the central widget from the UI file
+
+    // Create a container widget for the layout
+    QWidget *container = new QWidget();
+    container->setLayout(mainLayout); // Set the layout on the container
+
+    setCentralWidget(container); // Set the container as the central widget
+
     ui->overlapLabel->setText("Overlap: 50%");
     updateTimer = new QTimer(this);
     connect(updateTimer, &QTimer::timeout, this, &MainWindow::updateSpectrogram);
     updateTimer->start(100); // Update every 100 milliseconds
-
+    this->setWindowIcon(QIcon(":/assets/appicon.png"));
     ui->outputPathLineEdit->setText(audioProcessor->setOutputPath(""));
-
+    this->setStyleSheet("QMainWindow { background-color: #333; } QLabel, QPushButton { color: #FFF; }");
     InitializePortAudio();
 
     // Set up the initial QGraphicsScene for the spectrogram visualization
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->setBackgroundBrush(QBrush(Qt::black));
-    this->setMaximumSize(QSize(1260, 820));
 
     // Connect the buttons to the slots in the MainWindow constructor
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startProcessing);
@@ -47,38 +131,50 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(audioProcessor, &AudioProcessor::errorOccurred, this, &MainWindow::onErrorOccurred);
 }
 
+void MainWindow::toggleMaximizeRestore()
+{
+    if (isMaximized())
+    {
+        showNormal();
+    }
+    else
+    {
+        showMaximized();
+    }
+}
+
 void MainWindow::InitializePortAudio()
 {
     // Flush stderr to ensure all pending error messages are written
     fflush(stderr);
 
-    // Save the original stderr file descriptor
-    #if defined(_WIN32)
-        int old_stderr = _dup(_fileno(stderr));
-        freopen("nul", "w", stderr);
-    #else
-        int old_stderr = dup(fileno(stderr));
-        freopen("/dev/null", "w", stderr);
-    #endif
+// Save the original stderr file descriptor
+#if defined(_WIN32)
+    int old_stderr = _dup(_fileno(stderr));
+    freopen("nul", "w", stderr);
+#else
+    int old_stderr = dup(fileno(stderr));
+    freopen("/dev/null", "w", stderr);
+#endif
 
-        // Initialize PortAudio (or other operations that generate unwanted messages)
-        PaError err = Pa_Initialize(); // Calling Library initialization function
-        if (err != paNoError)
-        {
-            QMessageBox::critical(this, tr("PortAudio Error"), tr("Error initializing PortAudio: %1").arg(Pa_GetErrorText(err)));
-        }
+    // Initialize PortAudio (or other operations that generate unwanted messages)
+    PaError err = Pa_Initialize(); // Calling Library initialization function
+    if (err != paNoError)
+    {
+        QMessageBox::critical(this, tr("PortAudio Error"), tr("Error initializing PortAudio: %1").arg(Pa_GetErrorText(err)));
+    }
 
-        // Flush stderr again to ensure any error messages are written to nul or /dev/null
-        fflush(stderr);
+    // Flush stderr again to ensure any error messages are written to nul or /dev/null
+    fflush(stderr);
 
-        // Restore the original stderr file descriptor
-    #if defined(_WIN32)
-        _dup2(old_stderr, _fileno(stderr));
-        _close(old_stderr);
-    #else
-        dup2(old_stderr, fileno(stderr));
-        ::close(old_stderr);
-    #endif
+    // Restore the original stderr file descriptor
+#if defined(_WIN32)
+    _dup2(old_stderr, _fileno(stderr));
+    _close(old_stderr);
+#else
+    dup2(old_stderr, fileno(stderr));
+    ::close(old_stderr);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -86,6 +182,24 @@ MainWindow::~MainWindow()
     MainWindow::stopProcessing();
     Pa_Terminate();
     delete ui;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        move(event->globalPos() - dragPosition);
+        event->accept();
+    }
 }
 
 void MainWindow::startProcessing()
@@ -205,7 +319,7 @@ void MainWindow::on_selectOutputPathButton_clicked()
     setOutputPath(dir);
 }
 
-void MainWindow::setOutputPath(const QString& path)
+void MainWindow::setOutputPath(const QString &path)
 {
     ui->outputPathLineEdit->setText(path);
     // Pass the path to the audio processor

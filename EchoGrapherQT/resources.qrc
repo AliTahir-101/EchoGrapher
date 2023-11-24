@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/appicon.png</file>
+        <file>assets/close.png</file>
+        <file>assets/maximize.png</file>
+        <file>assets/minimize.png</file>
+    </qresource>
+</RCC>

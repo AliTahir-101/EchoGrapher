@@ -16,13 +16,16 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     friend class TestMainWindow;
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void InitializePortAudio();
-    void setOutputPath(const QString& path);
+    void setOutputPath(const QString &path);
 
 private slots:
+    void toggleMaximizeRestore();
+
     // Slot for handling the creation of the spectrogram visualization
     void onNewSpectrogram(const QVector<float> &spectrum);
     void updateSpectrogram();
@@ -51,6 +54,11 @@ private:
     AudioProcessor *audioProcessor; // Pointer to the AudioProcessor class
     QVector<QVector<float>> spectrumBuffer;
     QTimer *updateTimer;
+    QPoint dragPosition; // The dragPosition variable
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
