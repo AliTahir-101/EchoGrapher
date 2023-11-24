@@ -2,7 +2,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QDebug>
 #include <QTimer>
 #include <iostream>
 #include <QFileDialog>
@@ -232,7 +231,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
         int newY = qMax(availableGeometry.top() - height() + visibleMargin, newPos.y());
         newY = qMin(availableGeometry.bottom() - visibleMargin, newY);
-        qDebug() << "newX:" << newX << "newY:" << newY;
         move(newX, newY);
         event->accept();
     }
@@ -240,7 +238,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "Mouse Release Event";
     Q_UNUSED(event);
     dragging = false; // Stop dragging
 }
