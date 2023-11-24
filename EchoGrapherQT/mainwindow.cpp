@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     setWindowFlags(Qt::FramelessWindowHint); // Set frameless window
 
     ui->setupUi(this); // Set up the UI as defined by the .ui file
-
+    customizeSliders();
     // Create the custom title bar
     titleBar = new QWidget();
     titleBar->setStyleSheet("background-color: #1b1d27;");
@@ -37,13 +37,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     // Load the application icon
     QLabel *iconLabel = new QLabel(titleBar);
     QPixmap appIcon(":/assets/appicon.png");
-    iconLabel->setPixmap(appIcon.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation)); // Scale the icon to fit the title bar
-    iconLabel->setContentsMargins(0, 0, 60, 0);
+    iconLabel->setPixmap(appIcon.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation)); // Scale the icon to fit the title bar
+    iconLabel->setContentsMargins(10, 0, 60, 0);
 
     // Create the title label with centered alignment
     QLabel *titleLabel = new QLabel("EchoGrapher", titleBar);
     titleLabel->setAlignment(Qt::AlignCenter);
-    //    titleLabel->setContentsMargins(60, 0, 0, 0);
 
     // Customize the font
     QFont titleFont = titleLabel->font();
@@ -403,4 +402,61 @@ void MainWindow::on_zoomOutButton_clicked()
 void MainWindow::on_resetZoomButton_clicked()
 {
     ui->graphicsView->resetTransform();
+}
+
+void MainWindow::customizeSliders()
+{
+    // Customize the window size slider
+    ui->windowSizeslider->setStyleSheet(
+        "QSlider::groove:vertical {"
+        "    background: #b5b5b5;" // Groove color
+        "    width: 8px;"          // Groove width
+        "}"
+        "QSlider::handle:vertical {"
+        "    background: #d4d5d5;" // Handle color
+        "    height: 12px;"        // Handle height for a vertical slider
+        "    margin: 0 0;"     // The margin used here to extend the handle beyond the groove
+        "}"
+        "QSlider::add-page:vertical {"
+        "    background: #d74641;" // Color of the area before the handle
+        "}"
+        "QSlider::sub-page:vertical {"
+        "    background: #1b1c27;" // Color of the area after the handle
+        "}");
+
+    // Customize the mel band slider
+    ui->melBandSlider->setStyleSheet(
+        "QSlider::groove:vertical {"
+        "    background: #b5b5b5;" // Groove color
+        "    width: 8px;"          // Groove width
+        "}"
+        "QSlider::handle:vertical {"
+        "    background: #d4d5d5;" // Handle color
+        "    height: 12px;"        // Handle height for a vertical slider
+        "    margin: -1px 0;"     // The margin used here to extend the handle beyond the groove
+        "}"
+        "QSlider::add-page:vertical {"
+        "    background: #d74641;" // Color of the area before the handle
+        "}"
+        "QSlider::sub-page:vertical {"
+        "    background: #1b1c27;" // Color of the area after the handle
+        "}");
+
+    // Customize the overlap slider
+    ui->overlapSlider->setStyleSheet(
+        "QSlider::groove:vertical {"
+        "    background: #b5b5b5;" // Groove color
+        "    width: 8px;"          // Groove width
+        "}"
+        "QSlider::handle:vertical {"
+        "    background: #d4d5d5;" // Handle color
+        "    height: 12px;"        // Handle height for a vertical slider
+        "    margin: -1px 0;"     // The margin used here to extend the handle beyond the groove
+        "}"
+        "QSlider::add-page:vertical {"
+        "    background: #d74641;" // Color of the area before the handle
+        "}"
+        "QSlider::sub-page:vertical {"
+        "    background: #1b1c27;" // Color of the area after the handle
+        "}");
 }

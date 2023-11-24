@@ -4,5 +4,6 @@
         <file>assets/close.png</file>
         <file>assets/maximize.png</file>
         <file>assets/minimize.png</file>
+        <file>assets/settings.png</file>
     </qresource>
 </RCC>

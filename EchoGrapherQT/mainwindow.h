@@ -23,6 +23,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void InitializePortAudio();
+    void customizeSliders();
     void setOutputPath(const QString &path);
 
 private slots:
