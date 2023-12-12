@@ -1,6 +1,6 @@
 ## About This Project
 
-This project was developed as part of a technical interview process for [Supplyz.eu](https://supplyz.eu). The task was to create a cross-platform audio analysis tool capable of recording and visualizing audio spectrograms in real time.
+This project originated as a technical test for Supplyz.eu, aimed at designing a cross-platform audio analysis tool. Initially intended for an interview process, it has now been open-sourced. The tool is capable of recording audio and generating real-time visual spectrograms, and is designed for cross-platform compatibility. It is now freely available for anyone to use, modify, or integrate into their own projects as they see fit.
 
 # 🎵 Audio Spectrogram Visualizer - EchoGrapher 🎛️
 
